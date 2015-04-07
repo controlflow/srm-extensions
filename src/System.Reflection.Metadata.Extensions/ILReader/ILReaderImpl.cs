@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 
 namespace System.Reflection.Metadata.ILReader
 {
-  public static class ILReader
+  public static class ILReaderImpl
   {
     public static void Read(BlobReader reader, [NotNull] List<Instruction> instructions)
     {
@@ -692,12 +693,20 @@ namespace System.Reflection.Metadata.ILReader
                 instructions.Add(new Instruction(offset, Opcode.Readonly));
                 continue;
               default:
-                throw new ArgumentException("Unexpected opcode");
+                UnexpectedOpcode();
+                continue;
             }
           default:
-            throw new ArgumentException("Unexpected opcode");
+            UnexpectedOpcode();
+            continue;
         }
       }
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void UnexpectedOpcode()
+    {
+      throw new ArgumentException("Unexpected opcode");
     }
 
     private static int[] ReadSwitch(ref BlobReader reader)

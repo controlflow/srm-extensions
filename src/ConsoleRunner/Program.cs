@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
+using System.Reflection.Metadata.Extensions;
 using System.Reflection.Metadata.ILReader;
 using System.Reflection.PortableExecutable;
 
@@ -11,8 +12,8 @@ class Program
 {
   static void Main()
   {
-    var rsPath = @"C:\Work\ReSharper\bin";
-    var dllFiles = Directory.GetFiles(rsPath, "*.dll");
+    var dllFiles = Directory.GetFiles(@"C:\Work\ReSharper\bin", "*.dll");
+
 
     long ilBytes = 0, instructionsCount = 0;
     var stopwatch = Stopwatch.StartNew();
@@ -24,9 +25,8 @@ class Program
       {
         var metadataReader = peReader.GetMetadataReader();
 
-        foreach (var definitionHandle in metadataReader.MethodDefinitions)
+        foreach (var methodDefinition in metadataReader.GetMethodDefinitions())
         {
-          var methodDefinition = metadataReader.GetMethodDefinition(definitionHandle);
           //var typeDefinition = metadataReader.GetTypeDefinition(methodDefinition.GetDeclaringType());
 
           //var methodName = metadataReader.GetString(methodDefinition.Name);
@@ -45,7 +45,7 @@ class Program
           var instructions = new List<Instruction>(ilReader.RemainingBytes / 2);
           try
           {
-            ILReader.Read(ilReader, instructions);
+            ILReaderImpl.Read(ilReader, instructions);
           }
           catch
           {
