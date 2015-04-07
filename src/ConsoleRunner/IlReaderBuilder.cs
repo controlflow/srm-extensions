@@ -176,7 +176,7 @@ class IlReaderBuilder
       case "r4": return 9;
       case "r8": return 10;
       case "u": return 11;
-      case "r": return 12;
+      case "r": return 9;
     }
 
     return null;

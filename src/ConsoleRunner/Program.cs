@@ -39,6 +39,7 @@ class Program
           var methodBodyBlock = peReader.GetMethodBody(virtualAddress);
 
           var ilReader = methodBodyBlock.GetILReader();
+          
 
           ilBytes = Math.Max(ilBytes, ilReader.RemainingBytes);
 

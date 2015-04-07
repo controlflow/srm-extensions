@@ -18,6 +18,9 @@
     BltUn = 13,
     BneUn = 14,
     Box = 15,
+    /// <summary>
+    /// Unconditionally transfers control to a target instruction.
+    /// </summary>
     Br = 16,
     Break = 17,
     Brfalse = 18,

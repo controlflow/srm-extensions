@@ -366,7 +366,7 @@ namespace System.Reflection.Metadata.ILReader
             instructions.Add(new Instruction(offset, Opcode.Isinst, reader.ReadInt32()));
             continue;
           case 0x76: // conv.r.un
-            instructions.Add(new Instruction(offset, Opcode.ConvUn, 12));
+            instructions.Add(new Instruction(offset, Opcode.ConvUn, 9));
             continue;
           case 0x79: // unbox
             instructions.Add(new Instruction(offset, Opcode.Unbox, reader.ReadInt32()));

@@ -27,6 +27,7 @@
         case Opcode.AddOvfUn:
         case Opcode.Box:
         case Opcode.Unbox:
+        case Opcode.UnboxAny:
           return true;
 
         
@@ -130,8 +131,6 @@
         case Opcode.Tail:
         case Opcode.Throw:
         case Opcode.Unaligned:
-        
-        case Opcode.UnboxAny:
         case Opcode.Volatile:
         case Opcode.Xor:
           return true;

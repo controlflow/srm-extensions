@@ -35,7 +35,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Extensions\MetadataReaderExtensions.cs" />
+    <Compile Include="Extensions\RawHandle.cs" />
     <Compile Include="ILReader\ILReaderImpl.cs" />
+    <Compile Include="ILReader\ILType.cs" />
     <Compile Include="ILReader\Opcode.cs" />
     <Compile Include="ILReader\Instruction.cs" />
     <Compile Include="ILReader\OpcodeExtensions.cs" />
