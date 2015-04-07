@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection.Emit;
 using System.Reflection.Metadata.ILReader;
 using JetBrains.Annotations;
@@ -11,6 +12,10 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
   [TestFixture]
   public unsafe class ILReaderTest
   {
+    private ModuleBuilder myDynamicModule;
+    private TypeBuilder myTypeBuilder;
+    private int myLastMethodIndex;
+
     [Test] public void ReadAdd()
     {
       AssertReader(
@@ -119,29 +124,59 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
       AssertRelational(OpCodes.Bne_Un_S, Opcode.BneUn);
     }
 
-    [Test] public void ReadBoxUnbox()
+    [Test] public void ReadBoxUnboxAny()
     {
       AssertReader<Func<int, int>>(
         gen =>
         {
           gen.Emit(OpCodes.Ldarg_0);
-          gen.Emit(OpCodes.Box);
+          gen.Emit(OpCodes.Box, typeof(int));
+          gen.Emit(OpCodes.Dup);
           gen.Emit(OpCodes.Unbox, typeof(int));
+          gen.Emit(OpCodes.Ldind_I4);
+          gen.Emit(OpCodes.Pop);
+          gen.Emit(OpCodes.Unbox_Any, typeof(int));
           gen.Emit(OpCodes.Ret);
         },
         il =>
         {
-          Assert.That(il.Count, Is.EqualTo(4));
+          Assert.That(il.Count, Is.EqualTo(8));
           Assert.AreEqual(il[0].Code, Opcode.Ldarg);
           Assert.AreEqual(il[0].ArgumentIndex, 0);
           Assert.AreEqual(il[1].Code, Opcode.Box);
-          Assert.AreEqual(il[2].Code, Opcode.Unbox);
-          Assert.AreEqual(il[2].ArgumentIndex);
-          Assert.AreEqual(il[3].Code, Opcode.Ret);
+          Assert.AreEqual(il[2].Code, Opcode.Dup);
+          Assert.AreEqual(il[3].Code, Opcode.Unbox);
+          Assert.AreEqual(il[4].Code, Opcode.Ldind);
+          Assert.AreEqual(il[4].OperandType, ILType.Int32);
+          Assert.AreEqual(il[5].Code, Opcode.Pop);
+          Assert.AreEqual(il[6].Code, Opcode.UnboxAny);
+          Assert.AreEqual(il[7].Code, Opcode.Ret);
+
+          Assert.AreEqual(il[1].TypeToken, il[3].TypeToken);
+          Assert.AreEqual(il[1].TypeHandle, il[3].TypeHandle);
+          Assert.AreEqual(il[1].TypeToken, il[6].TypeToken);
+          Assert.AreEqual(il[1].TypeHandle, il[6].TypeHandle);
         });
     }
 
-    private static void AssertRelational(OpCode opCode, Opcode opcode)
+    [Test]
+    public void ReadBrTrueFalseBreak()
+    {
+      AssertReader(
+        gen =>
+        {
+          gen.Emit(OpCodes.Br);
+        },
+        il =>
+        {
+          Assert.That(il.Count, Is.EqualTo(8));
+          Assert.AreEqual(il[0].Code, Opcode.Ldarg);
+          
+        });
+    }
+
+
+    private void AssertRelational(OpCode opCode, Opcode opcode)
     {
       AssertReader<Func<bool>>(
         gen =>
@@ -166,12 +201,21 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
         });
     }
 
-    private static void AssertReader([NotNull] Action<ILGenerator> ilGenerator, [NotNull] Action<List<Instruction>> assertion)
+    [TestFixtureSetUp]
+    public void CreateDynamicAssembly()
+    {
+      var tempAssemblyName = new AssemblyName("Foo");
+      var assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(tempAssemblyName, AssemblyBuilderAccess.RunAndCollect);
+      myDynamicModule = assemblyBuilder.DefineDynamicModule("Foo");
+      myTypeBuilder = myDynamicModule.DefineType("Bar");
+    }
+
+    private void AssertReader([NotNull] Action<ILGenerator> ilGenerator, [NotNull] Action<List<Instruction>> assertion)
     {
       AssertReader<Action>(ilGenerator, assertion);
     }
 
-    private static void AssertReader<TDelegate>([NotNull] Action<ILGenerator> ilGenerator, [NotNull] Action<List<Instruction>> assertion)
+    private void AssertReader<TDelegate>([NotNull] Action<ILGenerator> ilGenerator, [NotNull] Action<List<Instruction>> assertion)
       where TDelegate : class
     {
       var delegateType = typeof(TDelegate);
@@ -180,11 +224,16 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
       var invokeMethod = delegateType.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Instance);
       var parameterTypes = invokeMethod.GetParameters().Select( x=> x.ParameterType).ToArray();
 
-      var dynamicMethod = new DynamicMethod("Test", invokeMethod.ReturnType, parameterTypes);
-      var generator = dynamicMethod.GetILGenerator();
+      var methodName = string.Format("Method{0}", myLastMethodIndex++);
+      var methodBuilder = myTypeBuilder.DefineMethod(methodName, MethodAttributes.Static, invokeMethod.ReturnType, parameterTypes);
+      var generator = methodBuilder.GetILGenerator();
+
+      //var dynamicMethod = new DynamicMethod("Test", invokeMethod.ReturnType, parameterTypes);
+      //var generator = dynamicMethod.GetILGenerator();
+
       ilGenerator(generator);
 
-      Assert.DoesNotThrow(() => dynamicMethod.CreateDelegate(delegateType));
+      //Assert.DoesNotThrow(() => dynamicMethod.CreateDelegate(delegateType));
 
       var generatorType = typeof(ILGenerator);
       var ilFieldInfo = generatorType.GetField("m_ILStream", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -202,7 +251,6 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
 
         var instructions = new List<Instruction>();
         ILReaderImpl.Read(blobReader, instructions);
-
         assertion(instructions);
       }
     }

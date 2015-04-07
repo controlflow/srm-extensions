@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection.Metadata.Extensions;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 
@@ -37,16 +38,19 @@ namespace System.Reflection.Metadata.ILReader
       myOperand = switchLabels;
     }
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int Offset
     {
       get { return myOffset; }
     }
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public Opcode Code
     {
       get { return myCode; }
     }
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int ValueInt32
     {
       get
@@ -63,6 +67,7 @@ namespace System.Reflection.Metadata.ILReader
         throw new ArgumentOutOfRangeException("myCode", myCode, "Unexpected opcode type");
     }
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int ArgumentIndex
     {
       get
@@ -86,6 +91,7 @@ namespace System.Reflection.Metadata.ILReader
       }
     }
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int BranchTarget
     {
       get
@@ -116,15 +122,23 @@ namespace System.Reflection.Metadata.ILReader
       }
     }
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public TypeReferenceHandle TypeHandle
     {
       get
       {
         AssertTypeHandle();
+        return (TypeReferenceHandle) RawHandle.From((uint) myIntOperand);
+      }
+    }
 
-        
-
-        return default(TypeReferenceHandle);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public int TypeToken
+    {
+      get
+      {
+        AssertTypeHandle();
+        return myIntOperand;
       }
     }
 
@@ -133,8 +147,39 @@ namespace System.Reflection.Metadata.ILReader
     {
       switch (myCode)
       {
+        case Opcode.Box:
         case Opcode.Unbox:
-        //case Opcode.UnboxAny:
+        case Opcode.UnboxAny:
+          return;
+
+        default:
+          throw new ArgumentOutOfRangeException("myCode", myCode, "Unexpected opcode type");
+      }
+    }
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public ILType OperandType
+    {
+      get
+      {
+        AssertOperandType();
+        return (ILType) myIntOperand;
+      }
+    }
+
+    [Conditional("DEBUG")]
+    private void AssertOperandType()
+    {
+      switch (myCode)
+      {
+        case Opcode.Ldind:
+        case Opcode.Stind:
+        case Opcode.Ldelem:
+        case Opcode.Stelem:
+        case Opcode.Conv:
+        case Opcode.ConvUn:
+        case Opcode.ConvOvf:
+        case Opcode.ConvOvfUn:
           return;
 
         default:
