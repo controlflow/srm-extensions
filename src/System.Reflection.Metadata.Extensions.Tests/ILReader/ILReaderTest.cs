@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection.Emit;
 using System.Reflection.Metadata.ILReader;
 using JetBrains.Annotations;
@@ -13,7 +12,6 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
   public unsafe class ILReaderTest
   {
     private ModuleBuilder myDynamicModule;
-    private TypeBuilder myTypeBuilder;
     private int myLastMethodIndex;
 
     [Test] public void ReadAdd()
@@ -160,21 +158,26 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
     }
 
     [Test]
-    public void ReadBrTrueFalseBreak()
+    public void ReadBrBreak()
     {
       AssertReader(
         gen =>
         {
-          gen.Emit(OpCodes.Br);
+          var label = gen.DefineLabel();
+          gen.Emit(OpCodes.Br, label);
+          gen.Emit(OpCodes.Break);
+          gen.MarkLabel(label);
+          gen.Emit(OpCodes.Ret);
         },
         il =>
         {
-          Assert.That(il.Count, Is.EqualTo(8));
-          Assert.AreEqual(il[0].Code, Opcode.Ldarg);
-          
+          Assert.That(il.Count, Is.EqualTo(3));
+          Assert.AreEqual(il[0].Code, Opcode.Br);
+          Assert.AreEqual(il[0].BranchTarget, il[2].Offset);
+          Assert.AreEqual(il[1].Code, Opcode.Break);
+          Assert.AreEqual(il[2].Code, Opcode.Ret);
         });
     }
-
 
     private void AssertRelational(OpCode opCode, Opcode opcode)
     {
@@ -196,7 +199,7 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
           Assert.AreEqual(il[1].Code, Opcode.LdcI4);
           Assert.AreEqual(il[1].ValueInt32, 8);
           Assert.AreEqual(il[2].Code, opcode);
-          Assert.AreEqual(il[2].BranchTarget, 0);
+          Assert.AreEqual(il[2].BranchTarget, il[0].Offset);
           Assert.AreEqual(il[3].Code, Opcode.Ret);
         });
     }
@@ -207,7 +210,6 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
       var tempAssemblyName = new AssemblyName("Foo");
       var assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(tempAssemblyName, AssemblyBuilderAccess.RunAndCollect);
       myDynamicModule = assemblyBuilder.DefineDynamicModule("Foo");
-      myTypeBuilder = myDynamicModule.DefineType("Bar");
     }
 
     private void AssertReader([NotNull] Action<ILGenerator> ilGenerator, [NotNull] Action<List<Instruction>> assertion)
@@ -224,8 +226,11 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
       var invokeMethod = delegateType.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Instance);
       var parameterTypes = invokeMethod.GetParameters().Select( x=> x.ParameterType).ToArray();
 
-      var methodName = string.Format("Method{0}", myLastMethodIndex++);
-      var methodBuilder = myTypeBuilder.DefineMethod(methodName, MethodAttributes.Static, invokeMethod.ReturnType, parameterTypes);
+      var dynamicName = string.Format("Method{0}", myLastMethodIndex++);
+      var typeBuilder = myDynamicModule.DefineType(dynamicName);
+      var methodBuilder = typeBuilder.DefineMethod(
+        dynamicName, MethodAttributes.Public | MethodAttributes.Static, invokeMethod.ReturnType, parameterTypes);
+
       var generator = methodBuilder.GetILGenerator();
 
       //var dynamicMethod = new DynamicMethod("Test", invokeMethod.ReturnType, parameterTypes);
@@ -234,16 +239,25 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
       ilGenerator(generator);
 
       //Assert.DoesNotThrow(() => dynamicMethod.CreateDelegate(delegateType));
+      var type = typeBuilder.CreateType();
 
-      var generatorType = typeof(ILGenerator);
-      var ilFieldInfo = generatorType.GetField("m_ILStream", BindingFlags.NonPublic | BindingFlags.Instance);
-      Assert.IsTrue(ilFieldInfo != null, "ilFieldInfo != null");
+      //var generatorType = typeof(ILGenerator);
+      //var ilFieldInfo = generatorType.GetField("m_ILStream", BindingFlags.NonPublic | BindingFlags.Instance);
+      //Assert.IsTrue(ilFieldInfo != null, "ilFieldInfo != null");
+      //
+      //var lengthFieldInfo = generatorType.GetField("m_length", BindingFlags.NonPublic | BindingFlags.Instance);
+      //Assert.IsTrue(lengthFieldInfo != null, "lengthField != null");
+      //
+      //var ilStream = (byte[]) ilFieldInfo.GetValue(generator);
+      //var ilLength = (int) lengthFieldInfo.GetValue(generator);
 
-      var lengthFieldInfo = generatorType.GetField("m_length", BindingFlags.NonPublic | BindingFlags.Instance);
-      Assert.IsTrue(lengthFieldInfo != null, "lengthField != null");
+      var methodInfo = type.GetMethod(dynamicName, BindingFlags.Public | BindingFlags.Static);
+      var methodBody = methodInfo.GetMethodBody();
+      Assert.IsNotNull(methodBody);
 
-      var ilStream = (byte[]) ilFieldInfo.GetValue(generator);
-      var ilLength = (int) lengthFieldInfo.GetValue(generator);
+      var ilStream = methodBody.GetILAsByteArray();
+      var ilLength = ilStream.Length;
+
 
       fixed (byte* ptr = &ilStream[0])
       {

@@ -12,6 +12,9 @@ class Program
 {
   static void Main()
   {
+    var builder = new IlReaderBuilder();
+    var text = builder.Build();
+
     var dllFiles = Directory.GetFiles(@"C:\Work\ReSharper\bin", "*.dll");
 
 

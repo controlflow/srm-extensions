@@ -2,8 +2,11 @@
 {
   public enum Opcode : byte
   {
+    /// <summary>Adds two values and pushes the result onto the evaluation stack.</summary>
     Add = 0,
+    /// <summary>Adds two integers, performs an overflow check, and pushes the result onto the evaluation stack.</summary>
     AddOvf = 1,
+    /// <summary>Adds two unsigned integer values, performs an overflow check, and pushes the result onto the evaluation stack.</summary>
     AddOvfUn = 2,
     And = 3,
     Arglist = 4,
@@ -18,9 +21,7 @@
     BltUn = 13,
     BneUn = 14,
     Box = 15,
-    /// <summary>
-    /// Unconditionally transfers control to a target instruction.
-    /// </summary>
+    /// <summary>Unconditionally transfers control to a target instruction.</summary>
     Br = 16,
     Break = 17,
     Brfalse = 18,

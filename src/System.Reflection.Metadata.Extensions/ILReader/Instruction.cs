@@ -116,6 +116,9 @@ namespace System.Reflection.Metadata.ILReader
         case Opcode.Blt:
         case Opcode.BltUn:
         case Opcode.BneUn:
+        case Opcode.Br:
+        case Opcode.Brfalse:
+        case Opcode.Brtrue:
           return;
         default:
           throw new ArgumentOutOfRangeException("myCode", myCode, "Unexpected opcode type");

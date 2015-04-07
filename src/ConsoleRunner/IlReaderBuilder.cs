@@ -91,7 +91,6 @@ class IlReaderBuilder
     {
       switch (code.OperandType)
       {
-        case OperandType.InlineBrTarget:
         case OperandType.InlineField:
         case OperandType.InlineI:
         case OperandType.InlineMethod:
@@ -102,6 +101,12 @@ class IlReaderBuilder
         case OperandType.ShortInlineR:
         {
           myBuilder.Append(", reader.ReadInt32()");
+          break;
+        }
+
+        case OperandType.InlineBrTarget:
+        {
+          myBuilder.Append(", reader.ReadInt32() + reader.Offset");
           break;
         }
 
@@ -126,9 +131,14 @@ class IlReaderBuilder
 
         case OperandType.ShortInlineVar:
         case OperandType.ShortInlineI:
-        case OperandType.ShortInlineBrTarget:
         {
           myBuilder.Append(", reader.ReadByte()");
+          break;
+        }
+
+        case OperandType.ShortInlineBrTarget:
+        {
+          myBuilder.Append(", reader.ReadByte() + reader.Offset");
           break;
         }
       }
