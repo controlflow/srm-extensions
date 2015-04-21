@@ -34,7 +34,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Annotations\HasThrowAnnotation.cs" />
+    <Compile Include="Extensions\MetadataMethod.cs" />
+    <Compile Include="Extensions\MetadataParameter.cs" />
     <Compile Include="Extensions\MetadataReaderExtensions.cs" />
+    <Compile Include="Extensions\MetadataType.cs" />
+    <Compile Include="Extensions\MetadataVisibility.cs" />
     <Compile Include="Extensions\RawHandle.cs" />
     <Compile Include="ILReader\ILReaderImpl.cs" />
     <Compile Include="ILReader\ILType.cs" />

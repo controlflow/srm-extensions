@@ -12,10 +12,12 @@ class Program
 {
   static void Main()
   {
-    var builder = new IlReaderBuilder();
-    var text = builder.Build();
+    //var builder = new IlReaderBuilder();
+    //var text = builder.Build();
 
-    var dllFiles = Directory.GetFiles(@"C:\Work\ReSharper\bin", "*.dll");
+    //var dllFiles = Directory.GetFiles(@"C:\Work\ReSharper\bin", "*.dll");
+
+    var dllFiles = new[] {typeof (object).Assembly.Location};
 
 
     long ilBytes = 0, instructionsCount = 0;
@@ -28,6 +30,12 @@ class Program
       {
         var metadataReader = peReader.GetMetadataReader();
 
+        var metadataTypes = metadataReader.GetMetadataTypes()
+          .Where(x => x.GetBaseType() != null)
+          .Select(x => new { Type = x, Base = x.GetBaseType().Value })
+          .ToList();
+
+
         foreach (var methodDefinition in metadataReader.GetMethodDefinitions())
         {
           //var typeDefinition = metadataReader.GetTypeDefinition(methodDefinition.GetDeclaringType());
@@ -36,7 +44,7 @@ class Program
           //var typeName = metadataReader.GetString(typeDefinition.Name);
           //var namespaceName = metadataReader.GetString(typeDefinition.Namespace);
 
-          var virtualAddress = methodDefinition.RelativeVirtualAddress;
+          var virtualAddress = methodDefinition.Definition.RelativeVirtualAddress;
           if (virtualAddress == 0) continue;
 
           var methodBodyBlock = peReader.GetMethodBody(virtualAddress);

@@ -164,17 +164,56 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
         {
           var label = gen.DefineLabel();
           gen.Emit(OpCodes.Br, label);
+          gen.Emit(OpCodes.Br_S, label);
           gen.Emit(OpCodes.Break);
           gen.MarkLabel(label);
           gen.Emit(OpCodes.Ret);
         },
         il =>
         {
-          Assert.That(il.Count, Is.EqualTo(3));
+          Assert.That(il.Count, Is.EqualTo(4));
           Assert.AreEqual(il[0].Code, Opcode.Br);
-          Assert.AreEqual(il[0].BranchTarget, il[2].Offset);
-          Assert.AreEqual(il[1].Code, Opcode.Break);
-          Assert.AreEqual(il[2].Code, Opcode.Ret);
+          Assert.AreEqual(il[0].BranchTarget, il[3].Offset);
+          Assert.AreEqual(il[1].Code, Opcode.Br);
+          Assert.AreEqual(il[1].BranchTarget, il[3].Offset);
+          Assert.AreEqual(il[2].Code, Opcode.Break);
+          Assert.AreEqual(il[3].Code, Opcode.Ret);
+        });
+    }
+
+    [Test] public void ReadBrTrueBrFalse()
+    {
+      AssertReader(
+        gen =>
+        {
+          var label = gen.DefineLabel();
+          gen.Emit(OpCodes.Ldc_I4_0);
+          gen.Emit(OpCodes.Brfalse, label);
+          gen.Emit(OpCodes.Ldc_I4_0);
+          gen.Emit(OpCodes.Brfalse_S, label);
+          gen.MarkLabel(label);
+          gen.Emit(OpCodes.Ldc_I4_0);
+          gen.Emit(OpCodes.Brtrue, label);
+          gen.Emit(OpCodes.Ldc_I4_0);
+          gen.Emit(OpCodes.Brtrue_S, label);
+          gen.Emit(OpCodes.Ret);
+        },
+        il =>
+        {
+          Assert.That(il.Count, Is.EqualTo(9));
+          Assert.AreEqual(il[0].Code, Opcode.LdcI4);
+          Assert.AreEqual(il[1].Code, Opcode.Brfalse);
+          Assert.AreEqual(il[1].BranchTarget, il[4].Offset);
+          Assert.AreEqual(il[2].Code, Opcode.LdcI4);
+          Assert.AreEqual(il[3].Code, Opcode.Brfalse);
+          Assert.AreEqual(il[3].BranchTarget, il[4].Offset);
+          Assert.AreEqual(il[4].Code, Opcode.LdcI4);
+          Assert.AreEqual(il[5].Code, Opcode.Brtrue);
+          Assert.AreEqual(il[5].BranchTarget, il[4].Offset);
+          Assert.AreEqual(il[6].Code, Opcode.LdcI4);
+          Assert.AreEqual(il[7].Code, Opcode.Brtrue);
+          Assert.AreEqual(il[7].BranchTarget, il[4].Offset);
+          Assert.AreEqual(il[8].Code, Opcode.Ret);
         });
     }
 

@@ -6,12 +6,24 @@ namespace System.Reflection.Metadata.Extensions
   public static class MetadataReaderExtensions
   {
     [NotNull]
-    public static IEnumerable<MethodDefinition> GetMethodDefinitions([NotNull] this MetadataReader metadataReader)
+    public static IEnumerable<MetadataType> GetMetadataTypes([NotNull] this MetadataReader metadataReader)
+    {
+      foreach (var definitionHandle in metadataReader.TypeDefinitions)
+      {
+        var typeDefinition = metadataReader.GetTypeDefinition(definitionHandle);
+
+        yield return new MetadataType(metadataReader, typeDefinition);
+      }
+    }
+
+    [NotNull]
+    public static IEnumerable<MetadataMethod> GetMethodDefinitions([NotNull] this MetadataReader metadataReader)
     {
       foreach (var definitionHandle in metadataReader.MethodDefinitions)
       {
         var definition = metadataReader.GetMethodDefinition(definitionHandle);
-        yield return definition;
+
+        yield return new MetadataMethod(metadataReader, definition);
       }
     }
   }

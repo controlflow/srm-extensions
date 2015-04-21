@@ -38,7 +38,9 @@
     Br = 16,
     /// <summary>Signals the Common Language Infrastructure (CLI) to inform the debugger that a break point has been tripped.</summary>
     Break = 17,
+    /// <summary>Transfers control to a target instruction if value is false, a null reference (Nothing in Visual Basic), or zero.</summary>
     Brfalse = 18,
+    /// <summary>Transfers control to a target instruction if value is true, not null, or non-zero.</summary>
     Brtrue = 19,
     Call = 20,
     Calli = 21,
