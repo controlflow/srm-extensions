@@ -10,10 +10,9 @@ namespace System.Reflection.Metadata.Extensions
     {
       foreach (var definitionHandle in metadataReader.MethodDefinitions)
       {
-        yield return metadataReader.GetMethodDefinition(definitionHandle);
+        var definition = metadataReader.GetMethodDefinition(definitionHandle);
+        yield return definition;
       }
     }
-
-
   }
 }

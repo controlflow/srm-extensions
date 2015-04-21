@@ -141,82 +141,82 @@ namespace System.Reflection.Metadata.ILReader
             instructions.Add(new Instruction(offset, Opcode.Ret));
             continue;
           case 0x2B: // br.s
-            instructions.Add(new Instruction(offset, Opcode.Br, reader.ReadByte()));
+            instructions.Add(new Instruction(offset, Opcode.Br, reader.ReadSByte() + reader.Offset));
             continue;
           case 0x2C: // brfalse.s
-            instructions.Add(new Instruction(offset, Opcode.Brfalse, reader.ReadByte()));
+            instructions.Add(new Instruction(offset, Opcode.Brfalse, reader.ReadSByte() + reader.Offset));
             continue;
           case 0x2D: // brtrue.s
-            instructions.Add(new Instruction(offset, Opcode.Brtrue, reader.ReadByte()));
+            instructions.Add(new Instruction(offset, Opcode.Brtrue, reader.ReadSByte() + reader.Offset));
             continue;
           case 0x2E: // beq.s
-            instructions.Add(new Instruction(offset, Opcode.Beq, reader.ReadByte()));
+            instructions.Add(new Instruction(offset, Opcode.Beq, reader.ReadSByte() + reader.Offset));
             continue;
           case 0x2F: // bge.s
-            instructions.Add(new Instruction(offset, Opcode.Bge, reader.ReadByte()));
+            instructions.Add(new Instruction(offset, Opcode.Bge, reader.ReadSByte() + reader.Offset));
             continue;
           case 0x30: // bgt.s
-            instructions.Add(new Instruction(offset, Opcode.Bgt, reader.ReadByte()));
+            instructions.Add(new Instruction(offset, Opcode.Bgt, reader.ReadSByte() + reader.Offset));
             continue;
           case 0x31: // ble.s
-            instructions.Add(new Instruction(offset, Opcode.Ble, reader.ReadByte()));
+            instructions.Add(new Instruction(offset, Opcode.Ble, reader.ReadSByte() + reader.Offset));
             continue;
           case 0x32: // blt.s
-            instructions.Add(new Instruction(offset, Opcode.Blt, reader.ReadByte()));
+            instructions.Add(new Instruction(offset, Opcode.Blt, reader.ReadSByte() + reader.Offset));
             continue;
           case 0x33: // bne.un.s
-            instructions.Add(new Instruction(offset, Opcode.BneUn, reader.ReadByte()));
+            instructions.Add(new Instruction(offset, Opcode.BneUn, reader.ReadSByte() + reader.Offset));
             continue;
           case 0x34: // bge.un.s
-            instructions.Add(new Instruction(offset, Opcode.BgeUn, reader.ReadByte()));
+            instructions.Add(new Instruction(offset, Opcode.BgeUn, reader.ReadSByte() + reader.Offset));
             continue;
           case 0x35: // bgt.un.s
-            instructions.Add(new Instruction(offset, Opcode.BgtUn, reader.ReadByte()));
+            instructions.Add(new Instruction(offset, Opcode.BgtUn, reader.ReadSByte() + reader.Offset));
             continue;
           case 0x36: // ble.un.s
-            instructions.Add(new Instruction(offset, Opcode.BleUn, reader.ReadByte()));
+            instructions.Add(new Instruction(offset, Opcode.BleUn, reader.ReadSByte() + reader.Offset));
             continue;
           case 0x37: // blt.un.s
-            instructions.Add(new Instruction(offset, Opcode.BltUn, reader.ReadByte()));
+            instructions.Add(new Instruction(offset, Opcode.BltUn, reader.ReadSByte() + reader.Offset));
             continue;
           case 0x38: // br
-            instructions.Add(new Instruction(offset, Opcode.Br, reader.ReadInt32()));
+            instructions.Add(new Instruction(offset, Opcode.Br, reader.ReadInt32() + reader.Offset));
             continue;
           case 0x39: // brfalse
-            instructions.Add(new Instruction(offset, Opcode.Brfalse, reader.ReadInt32()));
+            instructions.Add(new Instruction(offset, Opcode.Brfalse, reader.ReadInt32() + reader.Offset));
             continue;
           case 0x3A: // brtrue
-            instructions.Add(new Instruction(offset, Opcode.Brtrue, reader.ReadInt32()));
+            instructions.Add(new Instruction(offset, Opcode.Brtrue, reader.ReadInt32() + reader.Offset));
             continue;
           case 0x3B: // beq
-            instructions.Add(new Instruction(offset, Opcode.Beq, reader.ReadInt32()));
+            instructions.Add(new Instruction(offset, Opcode.Beq, reader.ReadInt32() + reader.Offset));
             continue;
           case 0x3C: // bge
-            instructions.Add(new Instruction(offset, Opcode.Bge, reader.ReadInt32()));
+            instructions.Add(new Instruction(offset, Opcode.Bge, reader.ReadInt32() + reader.Offset));
             continue;
           case 0x3D: // bgt
-            instructions.Add(new Instruction(offset, Opcode.Bgt, reader.ReadInt32()));
+            instructions.Add(new Instruction(offset, Opcode.Bgt, reader.ReadInt32() + reader.Offset));
             continue;
           case 0x3E: // ble
-            instructions.Add(new Instruction(offset, Opcode.Ble, reader.ReadInt32()));
+            instructions.Add(new Instruction(offset, Opcode.Ble, reader.ReadInt32() + reader.Offset));
             continue;
           case 0x3F: // blt
-            instructions.Add(new Instruction(offset, Opcode.Blt, reader.ReadInt32()));
+            instructions.Add(new Instruction(offset, Opcode.Blt, reader.ReadInt32() + reader.Offset));
             continue;
           case 0x40: // bne.un
-            instructions.Add(new Instruction(offset, Opcode.BneUn, reader.ReadInt32()));
+            instructions.Add(new Instruction(offset, Opcode.BneUn, reader.ReadInt32() + reader.Offset));
             continue;
           case 0x41: // bge.un
-            instructions.Add(new Instruction(offset, Opcode.BgeUn, reader.ReadInt32()));
+            instructions.Add(new Instruction(offset, Opcode.BgeUn, reader.ReadInt32() + reader.Offset));
             continue;
           case 0x42: // bgt.un
-            instructions.Add(new Instruction(offset, Opcode.BgtUn, reader.ReadInt32()));
+            instructions.Add(new Instruction(offset, Opcode.BgtUn, reader.ReadInt32() + reader.Offset));
             continue;
           case 0x43: // ble.un
-            instructions.Add(new Instruction(offset, Opcode.BleUn, reader.ReadInt32()));
+            instructions.Add(new Instruction(offset, Opcode.BleUn, reader.ReadInt32() + reader.Offset));
             continue;
           case 0x44: // blt.un
-            instructions.Add(new Instruction(offset, Opcode.BltUn, reader.ReadInt32()));
+            instructions.Add(new Instruction(offset, Opcode.BltUn, reader.ReadInt32() + reader.Offset));
             continue;
           case 0x45: // switch
             instructions.Add(new Instruction(offset, Opcode.Switch, ReadSwitch(ref reader)));
@@ -576,10 +576,10 @@ namespace System.Reflection.Metadata.ILReader
             instructions.Add(new Instruction(offset, Opcode.Endfinally));
             continue;
           case 0xDD: // leave
-            instructions.Add(new Instruction(offset, Opcode.Leave, reader.ReadInt32()));
+            instructions.Add(new Instruction(offset, Opcode.Leave, reader.ReadInt32() + reader.Offset));
             continue;
           case 0xDE: // leave.s
-            instructions.Add(new Instruction(offset, Opcode.Leave, reader.ReadByte()));
+            instructions.Add(new Instruction(offset, Opcode.Leave, reader.ReadSByte() + reader.Offset));
             continue;
           case 0xDF: // stind.i
             instructions.Add(new Instruction(offset, Opcode.Stind, 0));
@@ -605,6 +605,9 @@ namespace System.Reflection.Metadata.ILReader
           case 0xFD: // prefix2
             instructions.Add(new Instruction(offset, Opcode.Prefix2));
             continue;
+          //case 0xFE: // prefix1
+          //  instructions.Add(new Instruction(offset, Opcode.Prefix1));
+          //  continue;
           case 0xFF: // prefixref
             instructions.Add(new Instruction(offset, Opcode.Prefixref));
             continue;

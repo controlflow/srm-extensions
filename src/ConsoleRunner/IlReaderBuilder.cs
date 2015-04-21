@@ -32,7 +32,7 @@ class IlReaderBuilder
       myBuilder.AppendFormat("case 0x{0:X2}: // {1}", code.Value, code.Name).AppendLine();
 
       AppendOpcode(code);
-      myBuilder.AppendLine(" break;");
+      myBuilder.AppendLine(" continue;");
     }
 
     myBuilder.AppendFormat("case {0}:", MultiByteOpCodePrefix).AppendLine();
@@ -49,22 +49,24 @@ class IlReaderBuilder
       myBuilder.Append("  ");
 
       AppendOpcode(code);
-      myBuilder.AppendLine(" break;");
+      myBuilder.AppendLine("  continue;");
     }
 
     myBuilder.AppendLine("  default:");
-    myBuilder.AppendLine("    throw new ArgumentException(\"Unexpected opcode\")");
+    myBuilder.AppendLine("    UnexpectedOpcode();");
+    myBuilder.AppendLine("    continue;");
     myBuilder.AppendLine("  }");
-    myBuilder.AppendLine("  break;");
+    //myBuilder.AppendLine("  break;");
 
     myBuilder.AppendLine("default:");
-    myBuilder.AppendLine("  throw new ArgumentException(\"Unexpected opcode\")");
+    myBuilder.AppendLine("  UnexpectedOpcode();");
+    myBuilder.AppendLine("  continue;");
 
     myBuilder.AppendLine("}");
 
     var cases = string.Join(", ", myCases.OrderBy(x => x).Select((x, i) => string.Format("{0} = {1}", x, i)));
 
-    myBuilder.AppendFormat("enum OpCode {{ {0} }}", cases);
+    myBuilder.AppendFormat("enum Opcode {{ {0} }}", cases);
 
     return myBuilder.ToString();
   }
@@ -77,7 +79,7 @@ class IlReaderBuilder
     myBuilder.AppendFormat("  instructions.Add(new Instruction(offset");
 
     var caseName = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(name).Replace(".", "");
-    myBuilder.AppendFormat(", OpCode.{0}", caseName);
+    myBuilder.AppendFormat(", Opcode.{0}", caseName);
 
     myCases.Add(caseName);
 
@@ -112,7 +114,7 @@ class IlReaderBuilder
 
         case OperandType.InlineSwitch:
         {
-          myBuilder.Append(", ReadSwitch(reader)");
+          myBuilder.Append(", ReadSwitch(ref reader)");
           break;
         }
 
@@ -138,13 +140,14 @@ class IlReaderBuilder
 
         case OperandType.ShortInlineBrTarget:
         {
-          myBuilder.Append(", reader.ReadByte() + reader.Offset");
+          myBuilder.Append(", reader.ReadSByte() + reader.Offset");
           break;
         }
       }
     }
 
     myBuilder.Append("));");
+    myBuilder.AppendLine();
   }
 
   private static int? GetValue(OpCode code, ref string name)

@@ -157,8 +157,7 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
         });
     }
 
-    [Test]
-    public void ReadBrBreak()
+    [Test] public void ReadBrBreak()
     {
       AssertReader(
         gen =>
@@ -232,24 +231,9 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
         dynamicName, MethodAttributes.Public | MethodAttributes.Static, invokeMethod.ReturnType, parameterTypes);
 
       var generator = methodBuilder.GetILGenerator();
-
-      //var dynamicMethod = new DynamicMethod("Test", invokeMethod.ReturnType, parameterTypes);
-      //var generator = dynamicMethod.GetILGenerator();
-
       ilGenerator(generator);
 
-      //Assert.DoesNotThrow(() => dynamicMethod.CreateDelegate(delegateType));
       var type = typeBuilder.CreateType();
-
-      //var generatorType = typeof(ILGenerator);
-      //var ilFieldInfo = generatorType.GetField("m_ILStream", BindingFlags.NonPublic | BindingFlags.Instance);
-      //Assert.IsTrue(ilFieldInfo != null, "ilFieldInfo != null");
-      //
-      //var lengthFieldInfo = generatorType.GetField("m_length", BindingFlags.NonPublic | BindingFlags.Instance);
-      //Assert.IsTrue(lengthFieldInfo != null, "lengthField != null");
-      //
-      //var ilStream = (byte[]) ilFieldInfo.GetValue(generator);
-      //var ilLength = (int) lengthFieldInfo.GetValue(generator);
 
       var methodInfo = type.GetMethod(dynamicName, BindingFlags.Public | BindingFlags.Static);
       var methodBody = methodInfo.GetMethodBody();
@@ -257,7 +241,6 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
 
       var ilStream = methodBody.GetILAsByteArray();
       var ilLength = ilStream.Length;
-
 
       fixed (byte* ptr = &ilStream[0])
       {

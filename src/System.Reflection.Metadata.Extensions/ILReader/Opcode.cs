@@ -8,21 +8,35 @@
     AddOvf = 1,
     /// <summary>Adds two unsigned integer values, performs an overflow check, and pushes the result onto the evaluation stack.</summary>
     AddOvfUn = 2,
+    /// <summary>Computes the bitwise AND of two values and pushes the result onto the evaluation stack.</summary>
     And = 3,
+    /// <summary>Returns an unmanaged pointer to the argument list of the current method.</summary>
     Arglist = 4,
+    /// <summary>Transfers control to a target instruction if two values are equal.</summary>
     Beq = 5,
+    /// <summary>Transfers control to a target instruction if the first value is greater than or equal to the second value.</summary>
     Bge = 6,
+    /// <summary>Transfers control to a target instruction if the first value is greater than the second value, when comparing unsigned integer values or unordered float values.</summary>
     BgeUn = 7,
+    /// <summary>Transfers control to a target instruction if the first value is greater than the second value.</summary>
     Bgt = 8,
+    /// <summary>Transfers control to a target instruction if the first value is greater than the second value, when comparing unsigned integer values or unordered float values.</summary>
     BgtUn = 9,
+    /// <summary>Transfers control to a target instruction if the first value is less than or equal to the second value.</summary>
     Ble = 10,
+    /// <summary>Transfers control to a target instruction if the first value is less than or equal to the second value, when comparing unsigned integer values or unordered float values.</summary>
     BleUn = 11,
+    /// <summary>Transfers control to a target instruction if the first value is less than the second value.</summary>
     Blt = 12,
+    /// <summary>Transfers control to a target instruction if the first value is less than the second value, when comparing unsigned integer values or unordered float values.</summary>
     BltUn = 13,
+    /// <summary>Transfers control to a target instruction when two unsigned integer values or unordered float values are not equal.</summary>
     BneUn = 14,
+    /// <summary>Converts a value type to an object reference (type O).</summary>
     Box = 15,
     /// <summary>Unconditionally transfers control to a target instruction.</summary>
     Br = 16,
+    /// <summary>Signals the Common Language Infrastructure (CLI) to inform the debugger that a break point has been tripped.</summary>
     Break = 17,
     Brfalse = 18,
     Brtrue = 19,
@@ -87,6 +101,7 @@
     Newobj = 78,
     Nop = 79,
     Not = 80,
+    /// <summary>Compute the bitwise complement of the two integer values on top of the stack and pushes the result onto the evaluation stack.</summary>
     Or = 81,
     Pop = 82,
     Prefix1 = 83,
@@ -127,6 +142,7 @@
     Unbox = 118,
     UnboxAny = 119,
     Volatile = 120,
+    /// <summary>Computes the bitwise XOR of the top two values on the evaluation stack, pushing the result onto the evaluation stack.</summary>
     Xor = 121
   }
 }

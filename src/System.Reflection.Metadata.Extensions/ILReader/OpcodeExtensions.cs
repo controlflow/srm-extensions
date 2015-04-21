@@ -9,6 +9,7 @@
         case Opcode.Add:
         case Opcode.And:
         case Opcode.Or:
+        case Opcode.Xor:
         case Opcode.Neg:
         case Opcode.Arglist:
         case Opcode.Beq:
@@ -21,6 +22,10 @@
         case Opcode.Blt:
         case Opcode.BltUn:
         case Opcode.BneUn:
+        case Opcode.Br:
+        case Opcode.Break:
+        case Opcode.Brfalse:
+        case Opcode.Brtrue:
           return false;
 
         case Opcode.AddOvf:
@@ -30,11 +35,6 @@
         case Opcode.UnboxAny:
           return true;
 
-        
-        case Opcode.Br:
-        case Opcode.Break:
-        case Opcode.Brfalse:
-        case Opcode.Brtrue:
         case Opcode.Call:
         case Opcode.Calli:
         case Opcode.Callvirt:
@@ -132,7 +132,7 @@
         case Opcode.Throw:
         case Opcode.Unaligned:
         case Opcode.Volatile:
-        case Opcode.Xor:
+        
           return true;
       }
 
