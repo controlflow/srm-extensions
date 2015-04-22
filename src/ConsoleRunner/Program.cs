@@ -30,7 +30,17 @@ class Program
       {
         var metadataReader = peReader.GetMetadataReader();
 
-        var metadataTypes = metadataReader.GetMetadataTypeReferences().ToList();
+        var metadataTypes = metadataReader.GetMetadataTypeReferences()
+          .GroupBy(x => x.Assembly)
+          .ToList();
+
+
+
+        var assemblyReferences = metadataReader.GetMetadataAssemblyReferences().ToList();
+
+
+        var fullName = typeof (object).Assembly.FullName;
+
 
 
         foreach (var methodDefinition in metadataReader.GetMethodDefinitions())

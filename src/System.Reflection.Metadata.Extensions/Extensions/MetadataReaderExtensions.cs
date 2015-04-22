@@ -5,7 +5,7 @@ namespace System.Reflection.Metadata.Extensions
 {
   public static class MetadataReaderExtensions
   {
-    [NotNull]
+    [NotNull, Pure]
     public static IEnumerable<MetadataTypeDefinition> GetMetadataTypeDefinitions([NotNull] this MetadataReader metadataReader)
     {
       foreach (var definitionHandle in metadataReader.TypeDefinitions)
@@ -15,17 +15,27 @@ namespace System.Reflection.Metadata.Extensions
       }
     }
 
-    [NotNull]
+    [NotNull, Pure]
     public static IEnumerable<MetadataTypeReference> GetMetadataTypeReferences([NotNull] this MetadataReader metadataReader)
     {
-      foreach (var definitionHandle in metadataReader.TypeReferences)
+      foreach (var referenceHandle in metadataReader.TypeReferences)
       {
-        var typeReference = metadataReader.GetTypeReference(definitionHandle);
+        var typeReference = metadataReader.GetTypeReference(referenceHandle);
         yield return new MetadataTypeReference(metadataReader, typeReference);
       }
     }
 
-    [NotNull]
+    [NotNull, Pure]
+    public static IEnumerable<MetadataAssemblyReference> GetMetadataAssemblyReferences([NotNull] this MetadataReader metadataReader)
+    {
+      foreach (var referenceHandle in metadataReader.AssemblyReferences)
+      {
+        var assemblyReference = metadataReader.GetAssemblyReference(referenceHandle);
+        yield return new MetadataAssemblyReference(metadataReader, assemblyReference);
+      }
+    }
+
+    [NotNull, Pure]
     public static IEnumerable<MetadataMethod> GetMethodDefinitions([NotNull] this MetadataReader metadataReader)
     {
       foreach (var definitionHandle in metadataReader.MethodDefinitions)
@@ -34,5 +44,8 @@ namespace System.Reflection.Metadata.Extensions
         yield return new MetadataMethod(metadataReader, definition);
       }
     }
+
+
+
   }
 }

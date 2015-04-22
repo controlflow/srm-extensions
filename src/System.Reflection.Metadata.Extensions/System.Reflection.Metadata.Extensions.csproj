@@ -36,6 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Annotations\HasThrowAnnotation.cs" />
+    <Compile Include="Extensions\MetadataAssemblyReference.cs" />
     <Compile Include="Extensions\MetadataMethod.cs" />
     <Compile Include="Extensions\MetadataParameter.cs" />
     <Compile Include="Extensions\MetadataReaderExtensions.cs" />

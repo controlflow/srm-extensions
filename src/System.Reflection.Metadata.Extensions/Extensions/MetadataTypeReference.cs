@@ -1,11 +1,10 @@
 using System.Diagnostics;
-using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using JetBrains.Annotations;
 
 namespace System.Reflection.Metadata.Extensions
 {
-  [DebuggerDisplay("{FullName,nq}")]
+  [DebuggerDisplay("{DebugView,nq}")]
   public struct MetadataTypeReference
   {
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -19,7 +18,7 @@ namespace System.Reflection.Metadata.Extensions
       myTypeReference = typeReference;
     }
 
-    private TypeReference Reference
+    public TypeReference Reference
     {
       get { return myTypeReference; }
     }
@@ -100,6 +99,22 @@ namespace System.Reflection.Metadata.Extensions
       }
     }
 
+    public MetadataAssemblyReference Assembly
+    {
+      get
+      {
+        var resolutionScope = myTypeReference.ResolutionScope;
+        while (resolutionScope.Kind == HandleKind.TypeReference)
+        {
+          var typeReference = myMetadataReader.GetTypeReference((TypeReferenceHandle) resolutionScope);
+          resolutionScope = typeReference.ResolutionScope;
+        }
+
+        
+      }
+    }
+
+    // todo: assembly resolved
     public MetadataTypeDefinition? ResolveTypeDefinition()
     {
       var resolutionScope = myTypeReference.ResolutionScope;
@@ -117,6 +132,12 @@ namespace System.Reflection.Metadata.Extensions
 
       // todo: other cases
       return null;
+    }
+
+    [NotNull, DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private string DebugView
+    {
+      get { return "[typeref] " + FullName; }
     }
   }
 }
