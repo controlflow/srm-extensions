@@ -1,4 +1,4 @@
-namespace System.Reflection.Metadata.Extensions
+namespace System.Reflection.Metadata.Model
 {
   public enum MetadataVisibility : byte
   {

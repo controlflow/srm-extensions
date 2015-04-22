@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using JetBrains.Annotations;
 
-namespace System.Reflection.Metadata.Extensions
+namespace System.Reflection.Metadata.Model
 {
   [DebuggerDisplay("{FullName,nq}")]
   public struct MetadataAssemblyReference : IEquatable<MetadataAssemblyReference>
@@ -98,6 +98,11 @@ namespace System.Reflection.Metadata.Extensions
 
         return hashCode;
       }
+    }
+
+    public override string ToString()
+    {
+      return FullName;
     }
   }
 }

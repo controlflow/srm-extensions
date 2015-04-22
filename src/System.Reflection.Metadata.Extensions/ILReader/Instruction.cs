@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection.Metadata.Extensions;
+using System.Reflection.Metadata.Model;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 

@@ -4,8 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
-using System.Reflection.Metadata.Extensions;
 using System.Reflection.Metadata.ILReader;
+using System.Reflection.Metadata.Model;
 using System.Reflection.PortableExecutable;
 
 class Program
@@ -30,8 +30,13 @@ class Program
       {
         var metadataReader = peReader.GetMetadataReader();
 
-        var metadataTypes = metadataReader.GetMetadataTypeReferences()
+        var metadataTypes = metadataReader
+          .GetMetadataTypeReferences()
           .GroupBy(x => x.Assembly)
+          .Select(x => new {
+            Assembly = x.Key,
+            TypeReferences = x.OrderBy(t => t.FullName).ToList()
+          })
           .ToList();
 
 

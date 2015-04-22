@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.IO;
+using System.Reflection.Metadata.Model;
 using System.Reflection.PortableExecutable;
 using JetBrains.Annotations;
 using NUnit.Framework;

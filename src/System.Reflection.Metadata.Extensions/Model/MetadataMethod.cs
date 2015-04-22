@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using JetBrains.Annotations;
 
-namespace System.Reflection.Metadata.Extensions
+namespace System.Reflection.Metadata.Model
 {
   [DebuggerDisplay("{Name}")]
   public struct MetadataMethod

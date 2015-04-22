@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Text;
 using JetBrains.Annotations;
 
-namespace System.Reflection.Metadata.Extensions
+namespace System.Reflection.Metadata.Model
 {
   [DebuggerDisplay("{DebugView,nq}")]
   public struct MetadataTypeReference
@@ -75,7 +75,22 @@ namespace System.Reflection.Metadata.Extensions
 
     [NotNull] public string Namespace
     {
-      get { return myMetadataReader.GetString(myTypeReference.Namespace); }
+      get
+      {
+        var type = myTypeReference;
+
+        for (var resolutionScope = type.ResolutionScope;
+             !resolutionScope.IsNil && resolutionScope.Kind == HandleKind.TypeReference; )
+        {
+          type = myMetadataReader.GetTypeReference((TypeReferenceHandle) resolutionScope);
+          resolutionScope = type.ResolutionScope;
+        }
+
+        var namespaceHandle = type.Namespace;
+        if (namespaceHandle.IsNil) return string.Empty;
+
+        return myMetadataReader.GetString(namespaceHandle);
+      }
     }
 
     public MetadataTypeReference? ContainingType
@@ -110,7 +125,13 @@ namespace System.Reflection.Metadata.Extensions
           resolutionScope = typeReference.ResolutionScope;
         }
 
-        
+        if (resolutionScope.Kind == HandleKind.AssemblyReference)
+        {
+          var assemblyReference = myMetadataReader.GetAssemblyReference((AssemblyReferenceHandle) resolutionScope);
+          return new MetadataAssemblyReference(myMetadataReader, assemblyReference);
+        }
+
+        throw new NotImplementedException();
       }
     }
 
@@ -138,6 +159,11 @@ namespace System.Reflection.Metadata.Extensions
     private string DebugView
     {
       get { return "[typeref] " + FullName; }
+    }
+
+    public override string ToString()
+    {
+      return FullName;
     }
   }
 }

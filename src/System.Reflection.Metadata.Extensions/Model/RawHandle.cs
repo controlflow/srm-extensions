@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
-namespace System.Reflection.Metadata.Extensions
+namespace System.Reflection.Metadata.Model
 {
   [SuppressMessage("ReSharper", "UseObjectOrCollectionInitializer")]
   [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Local")]

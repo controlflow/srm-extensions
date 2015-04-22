@@ -3,9 +3,9 @@ using System.Diagnostics;
 using System.Text;
 using JetBrains.Annotations;
 
-namespace System.Reflection.Metadata.Extensions
+namespace System.Reflection.Metadata.Model
 {
-  [DebuggerDisplay("{FullName,nq}")]
+  [DebuggerDisplay("{DebugView,nq}")]
   public struct MetadataTypeDefinition
   {
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -234,6 +234,12 @@ namespace System.Reflection.Metadata.Extensions
 
     // TODO: GetBaseTypeSpecification
     // TODO: GetBaseTypeReference
+
+    [NotNull, DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private string DebugView
+    {
+      get { return "[typedef] " + FullName; }
+    }
 
     public override string ToString()
     {

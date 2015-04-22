@@ -36,14 +36,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Annotations\HasThrowAnnotation.cs" />
-    <Compile Include="Extensions\MetadataAssemblyReference.cs" />
-    <Compile Include="Extensions\MetadataMethod.cs" />
-    <Compile Include="Extensions\MetadataParameter.cs" />
-    <Compile Include="Extensions\MetadataReaderExtensions.cs" />
-    <Compile Include="Extensions\MetadataTypeDefinition.cs" />
-    <Compile Include="Extensions\MetadataTypeReference.cs" />
-    <Compile Include="Extensions\MetadataVisibility.cs" />
-    <Compile Include="Extensions\RawHandle.cs" />
+    <Compile Include="Model\MetadataAssemblyReference.cs" />
+    <Compile Include="Model\MetadataMethod.cs" />
+    <Compile Include="Model\MetadataParameter.cs" />
+    <Compile Include="Model\MetadataReaderExtensions.cs" />
+    <Compile Include="Model\MetadataTypeDefinition.cs" />
+    <Compile Include="Model\MetadataTypeReference.cs" />
+    <Compile Include="Model\MetadataTypeSpecification.cs" />
+    <Compile Include="Model\MetadataVisibility.cs" />
+    <Compile Include="Model\RawHandle.cs" />
     <Compile Include="ILReader\ILReaderImpl.cs" />
     <Compile Include="ILReader\ILType.cs" />
     <Compile Include="ILReader\Opcode.cs" />
