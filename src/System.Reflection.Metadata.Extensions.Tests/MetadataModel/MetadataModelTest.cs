@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Diagnostics.CodeAnalysis;
+using NUnit.Framework;
 
 namespace System.Reflection.Metadata.Extensions.Tests.MetadataModel
 {
@@ -12,7 +13,7 @@ namespace System.Reflection.Metadata.Extensions.Tests.MetadataModel
       Assert.AreEqual(metadataType.FullName, type.FullName);
       Assert.AreEqual(metadataType.Namespace, type.Namespace);
       Assert.AreEqual(metadataType.Name, type.Name);
-      Assert.IsTrue(metadataType.IsType);
+      Assert.IsTrue(metadataType.IsClass);
       Assert.IsFalse(metadataType.IsInterface);
       Assert.IsFalse(metadataType.IsAbstract);
       Assert.IsFalse(metadataType.IsSealed);
@@ -24,18 +25,20 @@ namespace System.Reflection.Metadata.Extensions.Tests.MetadataModel
       var type = typeof(Class);
       var metadataType = GetMetadataDefinition(type);
       Assert.IsTrue(metadataType.IsNested);
-      Assert.AreEqual(type.FullName, type.FullName);
-      Assert.AreEqual(type.Name, type.Name);
+      Assert.AreEqual(metadataType.FullName, type.FullName);
+      Assert.AreEqual(metadataType.Namespace, type.Namespace);
+      Assert.AreEqual(metadataType.Name, type.Name);
     }
 
-    //[Test] public void TestGenericType()
-    //{
-    //  var type = typeof(Class);
-    //  var metadataType = GetMetadataType(type);
-    //  Assert.IsTrue(metadataType.IsNested);
-    //  Assert.AreEqual(type.FullName, type.FullName);
-    //  Assert.AreEqual(type.Name, type.Name);
-    //}
+    [Test] public void TestGenericNestedType()
+    {
+      var type = typeof(Generic<,>.Nested<>);
+      var metadataType = GetMetadataDefinition(type);
+      Assert.IsTrue(metadataType.IsNested);
+      Assert.AreEqual(metadataType.FullName, type.FullName);
+      Assert.AreEqual(metadataType.Namespace, type.Namespace);
+      Assert.AreEqual(metadataType.Name, type.Name);
+    }
 
     [Test] public void TestIsValueType()
     {
@@ -45,12 +48,25 @@ namespace System.Reflection.Metadata.Extensions.Tests.MetadataModel
       Assert.IsTrue(GetMetadataDefinition(typeof(Enumeration)).IsValueType);
       Assert.IsTrue(GetMetadataDefinition(typeof(Struct)).IsValueType);
       Assert.IsTrue(GetMetadataDefinition(typeof(Nullable<>)).IsValueType);
+      Assert.IsTrue(GetMetadataDefinition(typeof(ConsoleKey)).IsValueType);
       Assert.IsTrue(GetMetadataDefinition(typeof(int)).IsValueType);
+    }
+
+    [Test] public void TestIsPointer()
+    {
+      
     }
 
     interface IInterface { }
     enum Enumeration { }
     class Class { }
     struct Struct { }
+
+    [SuppressMessage("ReSharper", "ClassNeverInstantiated.Local")]
+    [SuppressMessage("ReSharper", "UnusedTypeParameter")]
+    class Generic<TReturn, TLeft>
+    {
+      public class Nested<T> {  }
+    }
   }
 }

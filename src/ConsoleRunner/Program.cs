@@ -15,9 +15,9 @@ class Program
     //var builder = new IlReaderBuilder();
     //var text = builder.Build();
 
-    //var dllFiles = Directory.GetFiles(@"C:\Work\ReSharper\bin", "*.dll");
+    var dllFiles = Directory.GetFiles(@"C:\Work\ReSharper\bin", "*.dll");
 
-    var dllFiles = new[] {typeof (object).Assembly.Location};
+    //var dllFiles = new[] {typeof (object).Assembly.Location};
 
 
     long ilBytes = 0, instructionsCount = 0;
@@ -30,10 +30,7 @@ class Program
       {
         var metadataReader = peReader.GetMetadataReader();
 
-        var metadataTypes = metadataReader.GetMetadataTypes()
-          .Where(x => x.GetBaseType() != null)
-          .Select(x => new { Type = x, Base = x.GetBaseType().Value })
-          .ToList();
+        var metadataTypes = metadataReader.GetMetadataTypeReferences().ToList();
 
 
         foreach (var methodDefinition in metadataReader.GetMethodDefinitions())

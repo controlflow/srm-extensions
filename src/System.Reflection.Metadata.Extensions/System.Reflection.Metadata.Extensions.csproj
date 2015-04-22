@@ -24,6 +24,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -38,7 +39,8 @@
     <Compile Include="Extensions\MetadataMethod.cs" />
     <Compile Include="Extensions\MetadataParameter.cs" />
     <Compile Include="Extensions\MetadataReaderExtensions.cs" />
-    <Compile Include="Extensions\MetadataType.cs" />
+    <Compile Include="Extensions\MetadataTypeDefinition.cs" />
+    <Compile Include="Extensions\MetadataTypeReference.cs" />
     <Compile Include="Extensions\MetadataVisibility.cs" />
     <Compile Include="Extensions\RawHandle.cs" />
     <Compile Include="ILReader\ILReaderImpl.cs" />

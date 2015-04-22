@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 namespace System.Reflection.Metadata.Extensions
 {
   [DebuggerDisplay("{FullName,nq}")]
-  public struct MetadataType
+  public struct MetadataTypeDefinition
   {
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     [NotNull] private readonly MetadataReader myMetadataReader;
@@ -15,7 +15,7 @@ namespace System.Reflection.Metadata.Extensions
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private ImmutableArray<MetadataMethod> myMethods;
 
-    public MetadataType([NotNull] MetadataReader metadataReader, TypeDefinition typeDefinition)
+    public MetadataTypeDefinition([NotNull] MetadataReader metadataReader, TypeDefinition typeDefinition)
     {
       myMetadataReader = metadataReader;
       myTypeDefinition = typeDefinition;
@@ -45,10 +45,10 @@ namespace System.Reflection.Metadata.Extensions
           return builder.ToString();
         }
 
-        var handle = myTypeDefinition.Namespace;
-        if (handle.IsNil) return Name;
+        var namespaceHandle = myTypeDefinition.Namespace;
+        if (namespaceHandle.IsNil) return Name;
 
-        var nameSpace = myMetadataReader.GetString(myTypeDefinition.Namespace);
+        var nameSpace = myMetadataReader.GetString(namespaceHandle);
         return nameSpace + "." + Name;
       }
     }
@@ -77,19 +77,26 @@ namespace System.Reflection.Metadata.Extensions
       builder.Append(shortName);
     }
 
-    // todo: what about nested types?
     [NotNull] public string Namespace
     {
       get
       {
-        var handle = myTypeDefinition.Namespace;
-        if (handle.IsNil) return string.Empty;
+        var type = myTypeDefinition;
 
-        return myMetadataReader.GetString(myTypeDefinition.Namespace);
+        for (var declaringType = type.GetDeclaringType(); !declaringType.IsNil;)
+        {
+          type = myMetadataReader.GetTypeDefinition(declaringType);
+          declaringType = type.GetDeclaringType();
+        }
+
+        var namespaceHandle = type.Namespace;
+        if (namespaceHandle.IsNil) return string.Empty;
+
+        return myMetadataReader.GetString(namespaceHandle);
       }
     }
 
-    public MetadataType? ContainingType
+    public MetadataTypeDefinition? ContainingType
     {
       get
       {
@@ -97,11 +104,11 @@ namespace System.Reflection.Metadata.Extensions
         if (declaringType.IsNil) return null;
 
         var typeDefinition = myMetadataReader.GetTypeDefinition(declaringType);
-        return new MetadataType(myMetadataReader, typeDefinition);
+        return new MetadataTypeDefinition(myMetadataReader, typeDefinition);
       }
     }
 
-    public bool IsType
+    public bool IsClass
     {
       get { return !IsInterface; }
     }
@@ -179,61 +186,54 @@ namespace System.Reflection.Metadata.Extensions
       {
         if ((myTypeDefinition.Attributes & TypeAttributes.Interface) != 0) return false;
 
-        var baseType = myTypeDefinition.BaseType;
-        if (baseType.Kind == HandleKind.TypeDefinition)
+        var baseTypeHandle = myTypeDefinition.BaseType;
+        if (baseTypeHandle.Kind == HandleKind.TypeDefinition)
         {
-          var typeDefinition = myMetadataReader.GetTypeDefinition((TypeDefinitionHandle)baseType);
+          var typeDefinition = myMetadataReader.GetTypeDefinition((TypeDefinitionHandle) baseTypeHandle);
 
-          var namespaceDefinitionHandle = typeDefinition.Namespace;
-          if (!namespaceDefinitionHandle.IsNil)
-          {
-            var definition = myMetadataReader.GetString(namespaceDefinitionHandle);
-            if (definition == "System")
-            {
-              var s = myMetadataReader.GetString(typeDefinition.Name);
-              return s == "ValueType" || s == "Enum";
-            }
-          }
+          var namespaceHandle = typeDefinition.Namespace;
+          if (namespaceHandle.IsNil) return false;
+
+          var namespaceName = myMetadataReader.GetString(namespaceHandle);
+          if (namespaceName != "System") return false;
+
+          var typeName = myMetadataReader.GetString(typeDefinition.Name);
+          return typeName == "ValueType" || typeName == "Enum";
         }
-        else if (baseType.Kind == HandleKind.TypeReference)
-        {
-          var typeReference = myMetadataReader.GetTypeReference((TypeReferenceHandle)baseType);
 
-          var namespaceDefinitionHandle = typeReference.Namespace;
-          if (!namespaceDefinitionHandle.IsNil)
-          {
-            var definition = myMetadataReader.GetString(namespaceDefinitionHandle);
-            if (definition == "System")
-            {
-              var s = myMetadataReader.GetString(typeReference.Name);
-              return s == "ValueType" || s == "Enum";
-            }
-          }
+        if (baseTypeHandle.Kind == HandleKind.TypeReference)
+        {
+          var typeReference = myMetadataReader.GetTypeReference((TypeReferenceHandle) baseTypeHandle);
+
+          var namespaceHandle = typeReference.Namespace;
+          if (namespaceHandle.IsNil) return false;
+
+          var namespaceName = myMetadataReader.GetString(namespaceHandle);
+          if (namespaceName != "System") return false;
+
+          var typeName = myMetadataReader.GetString(typeReference.Name);
+          return typeName == "ValueType" || typeName == "Enum";
         }
 
         return false;
       }
     }
 
-    public MetadataType? GetBaseType()
+    public MetadataTypeDefinition? GetBaseTypeDefinition()
     {
-      var baseType = myTypeDefinition.BaseType;
-      if (baseType.Kind == HandleKind.TypeDefinition)
+      var baseTypeHadle = myTypeDefinition.BaseType;
+      if (baseTypeHadle.Kind == HandleKind.TypeDefinition)
       {
-        var typeDefinition = myMetadataReader.GetTypeDefinition((TypeDefinitionHandle) baseType);
+        var typeDefinition = myMetadataReader.GetTypeDefinition((TypeDefinitionHandle) baseTypeHadle);
 
-        return new MetadataType(myMetadataReader, typeDefinition);
+        return new MetadataTypeDefinition(myMetadataReader, typeDefinition);
       }
-      else if (baseType.Kind == HandleKind.TypeReference)
-      {
-        var typeReference = myMetadataReader.GetTypeReference((TypeReferenceHandle) baseType);
-
-        //typeReference.ResolutionScope
-      }
-
 
       return null;
     }
+
+    // TODO: GetBaseTypeSpecification
+    // TODO: GetBaseTypeReference
 
     public override string ToString()
     {

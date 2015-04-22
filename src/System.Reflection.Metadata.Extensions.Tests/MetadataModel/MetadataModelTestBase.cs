@@ -36,21 +36,13 @@ namespace System.Reflection.Metadata.Extensions.Tests.MetadataModel
       myLoadedAssemblies.Clear();
     }
 
-    protected MetadataType GetMetadataDefinition([NotNull] Type type)
+    protected MetadataTypeDefinition GetMetadataDefinition([NotNull] Type type)
     {
       Assert.NotNull(type, "type != null");
       Assert.IsFalse(type.IsConstructedGenericType, "type.IsConstructedGenericType");
 
-      var loadedAssembly = myLoadedAssemblies.GetOrAdd(type.Assembly, assembly =>
-      {
-        var assemblyStream = new FileStream(assembly.Location, FileMode.Open, FileAccess.Read, FileShare.Read);
-        var reader = new PEReader(assemblyStream, PEStreamOptions.PrefetchEntireImage);
-        var metadataReader = reader.GetMetadataReader();
-
-        return new LoadedAssembly(reader, metadataReader);
-      });
-
-      var metadataTypes = loadedAssembly.MetadataReader.GetMetadataTypes();
+      var loadedAssembly = myLoadedAssemblies.GetOrAdd(type.Assembly, LoadAssembly);
+      var metadataTypes = loadedAssembly.MetadataReader.GetMetadataTypeDefinitions();
 
       foreach (var metadataType in metadataTypes)
       {
@@ -58,6 +50,15 @@ namespace System.Reflection.Metadata.Extensions.Tests.MetadataModel
       }
 
       throw new AssertionException(string.Format("Type is not found: {0}", type.FullName));
+    }
+
+    private static LoadedAssembly LoadAssembly([NotNull] Assembly assembly)
+    {
+      var assemblyStream = new FileStream(assembly.Location, FileMode.Open, FileAccess.Read, FileShare.Read);
+      var reader = new PEReader(assemblyStream, PEStreamOptions.PrefetchEntireImage);
+      var metadataReader = reader.GetMetadataReader();
+
+      return new LoadedAssembly(reader, metadataReader);
     }
   }
 }
