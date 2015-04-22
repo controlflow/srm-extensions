@@ -55,6 +55,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ILReader\ILReaderTest.cs" />
+    <Compile Include="MetadataModel\MetadataModelTest.cs" />
+    <Compile Include="MetadataModel\MetadataModelTestBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

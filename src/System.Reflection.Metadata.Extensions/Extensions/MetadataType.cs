@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Text;
 using JetBrains.Annotations;
 
 namespace System.Reflection.Metadata.Extensions
@@ -35,6 +36,15 @@ namespace System.Reflection.Metadata.Extensions
     {
       get
       {
+        var declaringType = myTypeDefinition.GetDeclaringType();
+        if (!declaringType.IsNil)
+        {
+          var builder = new StringBuilder();
+          BuildFullName(builder, declaringType);
+          builder.Append('+').Append(Name);
+          return builder.ToString();
+        }
+
         var handle = myTypeDefinition.Namespace;
         if (handle.IsNil) return Name;
 
@@ -43,6 +53,31 @@ namespace System.Reflection.Metadata.Extensions
       }
     }
 
+    private void BuildFullName([NotNull] StringBuilder builder, TypeDefinitionHandle type)
+    {
+      var typeDefinition = myMetadataReader.GetTypeDefinition(type);
+
+      var containingType = typeDefinition.GetDeclaringType();
+      if (containingType.IsNil)
+      {
+        var namespaceHandle = typeDefinition.Namespace;
+        if (!namespaceHandle.IsNil)
+        {
+          var namespaceName = myMetadataReader.GetString(namespaceHandle);
+          builder.Append(namespaceName).Append('.');
+        }
+      }
+      else
+      {
+        BuildFullName(builder, containingType);
+        builder.Append('+');
+      }
+
+      var shortName = myMetadataReader.GetString(typeDefinition.Name);
+      builder.Append(shortName);
+    }
+
+    // todo: what about nested types?
     [NotNull] public string Namespace
     {
       get
@@ -138,6 +173,48 @@ namespace System.Reflection.Metadata.Extensions
       }
     }
 
+    public bool IsValueType
+    {
+      get
+      {
+        if ((myTypeDefinition.Attributes & TypeAttributes.Interface) != 0) return false;
+
+        var baseType = myTypeDefinition.BaseType;
+        if (baseType.Kind == HandleKind.TypeDefinition)
+        {
+          var typeDefinition = myMetadataReader.GetTypeDefinition((TypeDefinitionHandle)baseType);
+
+          var namespaceDefinitionHandle = typeDefinition.Namespace;
+          if (!namespaceDefinitionHandle.IsNil)
+          {
+            var definition = myMetadataReader.GetString(namespaceDefinitionHandle);
+            if (definition == "System")
+            {
+              var s = myMetadataReader.GetString(typeDefinition.Name);
+              return s == "ValueType" || s == "Enum";
+            }
+          }
+        }
+        else if (baseType.Kind == HandleKind.TypeReference)
+        {
+          var typeReference = myMetadataReader.GetTypeReference((TypeReferenceHandle)baseType);
+
+          var namespaceDefinitionHandle = typeReference.Namespace;
+          if (!namespaceDefinitionHandle.IsNil)
+          {
+            var definition = myMetadataReader.GetString(namespaceDefinitionHandle);
+            if (definition == "System")
+            {
+              var s = myMetadataReader.GetString(typeReference.Name);
+              return s == "ValueType" || s == "Enum";
+            }
+          }
+        }
+
+        return false;
+      }
+    }
+
     public MetadataType? GetBaseType()
     {
       var baseType = myTypeDefinition.BaseType;
@@ -147,7 +224,7 @@ namespace System.Reflection.Metadata.Extensions
 
         return new MetadataType(myMetadataReader, typeDefinition);
       }
-      else if (baseType.Kind == HandleKind.TypeDefinition)
+      else if (baseType.Kind == HandleKind.TypeReference)
       {
         var typeReference = myMetadataReader.GetTypeReference((TypeReferenceHandle) baseType);
 
