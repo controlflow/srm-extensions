@@ -12,8 +12,9 @@ class Program
 {
   static void Main()
   {
-    //var builder = new IlReaderBuilder();
-    //var text = builder.Build();
+    var builder = new IlReaderBuilder();
+    //var text = builder.BuildReadMethod();
+    var text = builder.BuildCountMethod();
 
     var dllFiles = Directory.GetFiles(@"C:\Work\ReSharper\bin", "*.dll");
 
@@ -30,26 +31,6 @@ class Program
       {
         var metadataReader = peReader.GetMetadataReader();
 
-        //metadataReader.GetMetadataTypeReferences()
-
-        var metadataTypes = metadataReader
-          .GetMetadataTypeReferences()
-          .GroupBy(x => x.Assembly)
-          .Select(x => new {
-            Assembly = x.Key,
-            TypeReferences = x.OrderBy(t => t.FullName).ToList()
-          })
-          .ToList();
-
-
-
-        var assemblyReferences = metadataReader.GetMetadataAssemblyReferences().ToList();
-
-
-        var fullName = typeof (object).Assembly.FullName;
-
-
-
         foreach (var methodDefinition in metadataReader.GetMethodDefinitions())
         {
           //var typeDefinition = metadataReader.GetTypeDefinition(methodDefinition.GetDeclaringType());
@@ -65,8 +46,9 @@ class Program
 
           var ilReader = methodBodyBlock.GetILReader();
           
-
           ilBytes = Math.Max(ilBytes, ilReader.RemainingBytes);
+
+          var count = ILReaderImpl.Count(ilReader);
 
           var instructions = new List<Instruction>(ilReader.RemainingBytes / 2);
           try
@@ -82,6 +64,9 @@ class Program
           
             throw;
           }
+
+          if (instructions.Count != count)
+            throw new ArgumentException();
 
           instructionsCount += instructions.Count;
 

@@ -657,6 +657,38 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
         });
     }
 
+    [Test] public void ReadSwitch()
+    {
+      AssertReader(
+        gen =>
+        {
+          var label1 = gen.DefineLabel();
+          var label2 = gen.DefineLabel();
+          var label3 = gen.DefineLabel();
+          gen.Emit(OpCodes.Switch, new[] {label1, label2, label3});
+          gen.MarkLabel(label1);
+          gen.Emit(OpCodes.Nop);
+          gen.MarkLabel(label2);
+          gen.Emit(OpCodes.Nop);
+          gen.MarkLabel(label3);
+          gen.Emit(OpCodes.Ret);
+        },
+        il =>
+        {
+          Assert.That(il.Count, Is.EqualTo(4));
+          Assert.AreEqual(il[0].Code, Opcode.Switch);
+          Assert.AreEqual(il[1].Code, Opcode.Nop);
+          Assert.AreEqual(il[2].Code, Opcode.Nop);
+          Assert.AreEqual(il[3].Code, Opcode.Ret);
+
+          var targets = il[0].SwitchTargets;
+          Assert.That(targets.Length, Is.EqualTo(3));
+          Assert.AreEqual(targets[0], il[1].Offset);
+          Assert.AreEqual(targets[1], il[2].Offset);
+          Assert.AreEqual(targets[2], il[3].Offset);
+        });
+    }
+
     private void AssertRelational(OpCode opCode, Opcode opcode)
     {
       AssertReader<Func<bool>>(
@@ -727,6 +759,10 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
 
         var instructions = new List<Instruction>();
         ILReaderImpl.Read(blobReader, instructions);
+
+        var count = ILReaderImpl.Count(blobReader);
+        Assert.That(count, Is.EqualTo(instructions.Count));
+
         assertion(instructions);
       }
     }

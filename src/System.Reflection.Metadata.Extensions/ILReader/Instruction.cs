@@ -127,6 +127,28 @@ namespace System.Reflection.Metadata.ILReader
     }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public int[] SwitchTargets
+    {
+      get
+      {
+        AssertSwitchTargets();
+        return (int[]) myOperand;
+      }
+    }
+
+    [Conditional("DEBUG")]
+    private void AssertSwitchTargets()
+    {
+      switch (myCode)
+      {
+        case Opcode.Switch:
+          return;
+        default:
+          throw new ArgumentOutOfRangeException("myCode", myCode, "Unexpected opcode type");
+      }
+    }
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public Handle TypeHandle
     {
       get

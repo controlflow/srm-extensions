@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace System.Reflection.Metadata.ILReader
 {
-  public static class ILReaderImpl
+  public static partial class ILReaderImpl
   {
     public static void Read(BlobReader reader, [NotNull] List<Instruction> instructions)
     {
@@ -716,10 +716,11 @@ namespace System.Reflection.Metadata.ILReader
     {
       var casesCount = reader.ReadInt32();
       var switchBranches = new int[casesCount];
+      var endOffset = reader.Offset + casesCount * 4;
 
       for (var index = 0; index < switchBranches.Length; index++)
       {
-        switchBranches[index] = reader.ReadInt32();
+        switchBranches[index] = reader.ReadInt32() + endOffset;
       }
 
       return switchBranches;
