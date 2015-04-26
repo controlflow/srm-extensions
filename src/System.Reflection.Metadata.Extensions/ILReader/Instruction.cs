@@ -186,6 +186,40 @@ namespace System.Reflection.Metadata.ILReader
       switch (myCode)
       {
         case Opcode.Call:
+        case Opcode.Callvirt:
+          return;
+
+        default:
+          throw new ArgumentOutOfRangeException("myCode", myCode, "Unexpected opcode type");
+      }
+    }
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public Handle SignatureHandle
+    {
+      get
+      {
+        AssertSignatureHandle();
+        return RawHandle.From((uint) myIntOperand);
+      }
+    }
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public int SignatureToken
+    {
+      get
+      {
+        AssertSignatureHandle();
+        return myIntOperand;
+      }
+    }
+
+    [Conditional("DEBUG")]
+    private void AssertSignatureHandle()
+    {
+      switch (myCode)
+      {
+        case Opcode.Calli:
           return;
 
         default:

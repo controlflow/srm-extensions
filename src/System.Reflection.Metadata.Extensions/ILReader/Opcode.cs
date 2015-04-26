@@ -46,6 +46,7 @@
     Call = 20,
     /// <summary>Calls the method indicated on the evaluation stack (as a pointer to an entry point) with arguments described by a calling convention.</summary>
     Calli = 21,
+    /// <summary>Calls a late-bound method on an object, pushing the return value onto the evaluation stack.</summary>
     Callvirt = 22,
     Castclass = 23,
     Ceq = 24,
@@ -81,6 +82,7 @@
     LdelemRef = 54,
     Ldfld = 55,
     Ldflda = 56,
+    /// <summary>Pushes an unmanaged pointer (type native int) to the native code implementing a specific method onto the evaluation stack.</summary>
     Ldftn = 57,
     Ldind = 58,
     LdindRef = 59,

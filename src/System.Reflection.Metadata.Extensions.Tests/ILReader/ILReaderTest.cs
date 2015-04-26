@@ -222,28 +222,61 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
         });
     }
 
-    [Test] public void ReadCallCalliTail()
+    [Test] public void ReadCallCalliCallvirtTail()
     {
       var writeLineMethod = typeof(Console).GetMethod("WriteLine", Type.EmptyTypes);
+      Assert.IsNotNull(writeLineMethod);
+      var toStringMethod = typeof(object).GetMethod("ToString", Type.EmptyTypes);
+      Assert.IsNotNull(toStringMethod);
 
-      AssertReader(
+      AssertReader<Func<int, string>>(
         gen =>
         {
           gen.Emit(OpCodes.Call, writeLineMethod);
-          gen.Emit(OpCodes.Tailcall);
+          gen.Emit(OpCodes.Ldftn, writeLineMethod);
           gen.EmitCalli(OpCodes.Calli, CallingConvention.FastCall, typeof(void), Type.EmptyTypes);
+          gen.Emit(OpCodes.Ldarg_0);
+          gen.Emit(OpCodes.Tailcall);
+          gen.Emit(OpCodes.Callvirt, toStringMethod);
           gen.Emit(OpCodes.Ret);
         },
         il =>
         {
-          Assert.That(il.Count, Is.EqualTo(4));
+          Assert.That(il.Count, Is.EqualTo(7));
           Assert.AreEqual(il[0].Code, Opcode.Call);
-          Assert.AreEqual(il[1].Code, Opcode.Tail);
+          Assert.AreEqual(il[1].Code, Opcode.Ldftn);
           Assert.AreEqual(il[2].Code, Opcode.Calli);
-          Assert.AreEqual(il[3].Code, Opcode.Ret);
+          Assert.AreEqual(il[3].Code, Opcode.Ldarg);
+          Assert.AreEqual(il[3].ArgumentIndex, 0);
+          Assert.AreEqual(il[4].Code, Opcode.Tail);
+          Assert.AreEqual(il[5].Code, Opcode.Callvirt);
+          Assert.AreEqual(il[6].Code, Opcode.Ret);
 
-          var resolvedMember = myDynamicModule.ResolveMember(il[0].MethodToken);
-          Assert.AreEqual(writeLineMethod, resolvedMember);
+          var resolvedStaticMember = myDynamicModule.ResolveMember(il[0].MethodToken);
+          Assert.AreEqual(writeLineMethod, resolvedStaticMember);
+
+          var resolvedInstanceMember = myDynamicModule.ResolveMember(il[5].MethodToken);
+          Assert.AreEqual(toStringMethod, resolvedInstanceMember);
+
+          var resolvedSignature = myDynamicModule.ResolveSignature(il[2].SignatureToken);
+          Assert.IsNotNull(resolvedSignature);
+          Assert.IsNotEmpty(resolvedSignature);
+        });
+    }
+
+    [Test] public void ReadCalli()
+    {
+      
+
+      AssertReader(
+        gen =>
+        {
+          
+          gen.Emit(OpCodes.Ret);
+        },
+        il =>
+        {
+          
         });
     }
 
