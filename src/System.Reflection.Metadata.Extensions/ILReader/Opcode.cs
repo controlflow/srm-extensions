@@ -82,9 +82,11 @@
     DivUn = 38,
     /// <summary>Copies the current topmost value on the evaluation stack, and then pushes the copy onto the evaluation stack.</summary>
     Dup = 39,
+    /// <summary>Transfers control from the filter clause of an exception back to the Common Language Infrastructure (CLI) exception handler.</summary>
     Endfilter = 40,
     /// <summary>Transfers control from the fault or finally clause of an exception block back to the Common Language Infrastructure (CLI) exception handler.</summary>
     Endfinally = 41,
+
     Initblk = 42,
     Initobj = 43,
     Isinst = 44,
