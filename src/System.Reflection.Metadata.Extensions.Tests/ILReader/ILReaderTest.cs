@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Reflection.Metadata.ILReader;
-using System.Reflection.Metadata.Model;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 using NUnit.Framework;
@@ -264,19 +263,25 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
         });
     }
 
-    [Test] public void ReadCalli()
+    [Test] public void ReadCastclass()
     {
-      
-
-      AssertReader(
+      AssertReader<Func<object, string>>(
         gen =>
         {
-          
+          gen.Emit(OpCodes.Ldarg_0);
+          gen.Emit(OpCodes.Castclass, typeof(string));
           gen.Emit(OpCodes.Ret);
         },
         il =>
         {
-          
+          Assert.That(il.Count, Is.EqualTo(3));
+          Assert.AreEqual(il[0].Code, Opcode.Ldarg);
+          Assert.AreEqual(il[0].ArgumentIndex, 0);
+          Assert.AreEqual(il[1].Code, Opcode.Castclass);
+          Assert.AreEqual(il[2].Code, Opcode.Ret);
+
+          var resolvedType = myDynamicModule.ResolveType(il[1].TypeToken);
+          Assert.AreEqual(typeof(string), resolvedType);
         });
     }
 

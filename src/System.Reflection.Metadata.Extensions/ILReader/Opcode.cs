@@ -48,6 +48,7 @@
     Calli = 21,
     /// <summary>Calls a late-bound method on an object, pushing the return value onto the evaluation stack.</summary>
     Callvirt = 22,
+    /// <summary>Attempts to cast an object passed by reference to the specified class.</summary>
     Castclass = 23,
     Ceq = 24,
     Cgt = 25,

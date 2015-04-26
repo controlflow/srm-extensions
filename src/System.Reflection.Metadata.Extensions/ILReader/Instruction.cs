@@ -153,6 +153,7 @@ namespace System.Reflection.Metadata.ILReader
         case Opcode.Box:
         case Opcode.Unbox:
         case Opcode.UnboxAny:
+        case Opcode.Castclass:
           return;
 
         default:
