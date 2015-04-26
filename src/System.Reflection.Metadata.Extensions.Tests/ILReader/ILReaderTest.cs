@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Reflection.Metadata.ILReader;
+using System.Reflection.Metadata.Model;
+using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 using NUnit.Framework;
 
@@ -154,6 +156,9 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
           Assert.AreEqual(il[1].TypeHandle, il[3].TypeHandle);
           Assert.AreEqual(il[1].TypeToken, il[6].TypeToken);
           Assert.AreEqual(il[1].TypeHandle, il[6].TypeHandle);
+
+          var resolvedType = myDynamicModule.ResolveType(il[1].TypeToken);
+          Assert.AreEqual(resolvedType, typeof(int));
         });
     }
 
@@ -214,6 +219,31 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
           Assert.AreEqual(il[7].Code, Opcode.Brtrue);
           Assert.AreEqual(il[7].BranchTarget, il[4].Offset);
           Assert.AreEqual(il[8].Code, Opcode.Ret);
+        });
+    }
+
+    [Test] public void ReadCallCalliTail()
+    {
+      var writeLineMethod = typeof(Console).GetMethod("WriteLine", Type.EmptyTypes);
+
+      AssertReader(
+        gen =>
+        {
+          gen.Emit(OpCodes.Call, writeLineMethod);
+          gen.Emit(OpCodes.Tailcall);
+          gen.EmitCalli(OpCodes.Calli, CallingConvention.FastCall, typeof(void), Type.EmptyTypes);
+          gen.Emit(OpCodes.Ret);
+        },
+        il =>
+        {
+          Assert.That(il.Count, Is.EqualTo(4));
+          Assert.AreEqual(il[0].Code, Opcode.Call);
+          Assert.AreEqual(il[1].Code, Opcode.Tail);
+          Assert.AreEqual(il[2].Code, Opcode.Calli);
+          Assert.AreEqual(il[3].Code, Opcode.Ret);
+
+          var resolvedMember = myDynamicModule.ResolveMember(il[0].MethodToken);
+          Assert.AreEqual(writeLineMethod, resolvedMember);
         });
     }
 

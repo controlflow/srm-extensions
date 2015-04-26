@@ -30,6 +30,8 @@ class Program
       {
         var metadataReader = peReader.GetMetadataReader();
 
+        //metadataReader.GetMetadataTypeReferences()
+
         var metadataTypes = metadataReader
           .GetMetadataTypeReferences()
           .GroupBy(x => x.Assembly)

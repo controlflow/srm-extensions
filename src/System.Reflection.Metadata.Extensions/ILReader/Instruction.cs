@@ -126,12 +126,12 @@ namespace System.Reflection.Metadata.ILReader
     }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public TypeReferenceHandle TypeHandle
+    public Handle TypeHandle
     {
       get
       {
         AssertTypeHandle();
-        return (TypeReferenceHandle) RawHandle.From((uint) myIntOperand);
+        return RawHandle.From((uint) myIntOperand);
       }
     }
 
@@ -153,6 +153,39 @@ namespace System.Reflection.Metadata.ILReader
         case Opcode.Box:
         case Opcode.Unbox:
         case Opcode.UnboxAny:
+          return;
+
+        default:
+          throw new ArgumentOutOfRangeException("myCode", myCode, "Unexpected opcode type");
+      }
+    }
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public Handle MethodHandle
+    {
+      get
+      {
+        AssertMethodHandle();
+        return RawHandle.From((uint) myIntOperand);
+      }
+    }
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public int MethodToken
+    {
+      get
+      {
+        AssertMethodHandle();
+        return myIntOperand;
+      }
+    }
+
+    [Conditional("DEBUG")]
+    private void AssertMethodHandle()
+    {
+      switch (myCode)
+      {
+        case Opcode.Call:
           return;
 
         default:

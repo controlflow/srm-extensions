@@ -16,10 +16,27 @@ namespace System.Reflection.Metadata.Model
       myMetadataReader = metadataReader;
       myTypeSpecification = typeSpecification;
 
-      
+      //metadataReader.
+
+      //metadataReader.GetGenericParameterConstraint().
+
+      var signature = metadataReader.GetBlobReader(typeSpecification.Signature);
+      var signatureTypeCode = signature.ReadSignatureTypeCode();
+
+      switch (signatureTypeCode)
+      {
+        
+      }
+
+
+      //metadataReader.GetTypeSpecification().
     }
 
-
+    [NotNull]
+    public string FullName
+    {
+      get { return string.Empty; }
+    }
 
     [NotNull, DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private string DebugView

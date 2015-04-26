@@ -5,6 +5,8 @@ using JetBrains.Annotations;
 
 namespace System.Reflection.Metadata.Model
 {
+  // todo: attributes
+
   [DebuggerDisplay("{DebugView,nq}")]
   public struct MetadataTypeDefinition
   {

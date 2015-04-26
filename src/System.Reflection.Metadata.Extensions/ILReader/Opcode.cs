@@ -42,7 +42,9 @@
     Brfalse = 18,
     /// <summary>Transfers control to a target instruction if value is true, not null, or non-zero.</summary>
     Brtrue = 19,
+    /// <summary>Calls the method indicated by the passed method descriptor.</summary>
     Call = 20,
+    /// <summary>Calls the method indicated on the evaluation stack (as a pointer to an entry point) with arguments described by a calling convention.</summary>
     Calli = 21,
     Callvirt = 22,
     Castclass = 23,
@@ -138,6 +140,7 @@
     SubOvf = 112,
     SubOvfUn = 113,
     Switch = 114,
+    /// <summary>Performs a postfixed method call instruction such that the current method's stack frame is removed before the actual call instruction is executed.</summary>
     Tail = 115,
     Throw = 116,
     Unaligned = 117,
