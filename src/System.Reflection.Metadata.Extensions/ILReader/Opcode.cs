@@ -72,8 +72,9 @@
     ConvOvfUn = 33,
     /// <summary>Converts the unsigned (integer) value on top of the evaluation stack to some (float32) type.</summary>
     ConvUn = 34,
-
+    /// <summary>Copies a specified number bytes from a source address to a destination address.</summary>
     Cpblk = 35,
+    /// <summary>Copies the value type located at the address of an object (type &amp;, * or native int) to the address of the destination object (type &amp;, * or native int).</summary>
     Cpobj = 36,
     Div = 37,
     DivUn = 38,
@@ -110,6 +111,7 @@
     Ldtoken = 68,
     Ldvirtftn = 69,
     Leave = 70,
+    /// <summary>Allocates a certain number of bytes from the local dynamic memory pool and pushes the address (a transient pointer, type *) of the first allocated byte onto the evaluation stack.</summary>
     Localloc = 71,
     Mkrefany = 72,
     Mul = 73,
