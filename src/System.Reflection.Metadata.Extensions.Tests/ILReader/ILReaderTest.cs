@@ -337,6 +337,7 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
     [Test] public void ReadConstrained()
     {
       var toStringMethod = typeof(object).GetMethod("ToString", Type.EmptyTypes);
+      Assert.IsNotNull(toStringMethod);
 
       AssertReader<Func<int, string>>(
         gen =>
@@ -557,6 +558,33 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
           Assert.AreEqual(il[3].Code, Opcode.Div);
           Assert.AreEqual(il[4].Code, Opcode.DivUn);
           Assert.AreEqual(il[5].Code, Opcode.Ret);
+        });
+    }
+
+    [Test] public void ReadLeaveFinally()
+    {
+      var writeLineMethod = typeof(Console).GetMethod("WriteLine", Type.EmptyTypes);
+      Assert.IsNotNull(writeLineMethod);
+
+      AssertReader(
+        gen =>
+        {
+          gen.BeginExceptionBlock();
+          gen.Emit(OpCodes.Call, writeLineMethod);
+          gen.BeginFinallyBlock();
+          gen.Emit(OpCodes.Call, writeLineMethod);
+          gen.EndExceptionBlock();
+          gen.Emit(OpCodes.Ret);
+        },
+        il =>
+        {
+          Assert.That(il.Count, Is.EqualTo(5));
+          Assert.AreEqual(il[0].Code, Opcode.Call);
+          Assert.AreEqual(il[1].Code, Opcode.Leave);
+          Assert.AreEqual(il[1].BranchTarget, il[0].Offset);
+          Assert.AreEqual(il[2].Code, Opcode.Call);
+          Assert.AreEqual(il[3].Code, Opcode.Endfinally);
+          Assert.AreEqual(il[4].Code, Opcode.Ret);
         });
     }
 

@@ -83,6 +83,7 @@
     /// <summary>Copies the current topmost value on the evaluation stack, and then pushes the copy onto the evaluation stack.</summary>
     Dup = 39,
     Endfilter = 40,
+    /// <summary>Transfers control from the fault or finally clause of an exception block back to the Common Language Infrastructure (CLI) exception handler.</summary>
     Endfinally = 41,
     Initblk = 42,
     Initobj = 43,
@@ -113,6 +114,7 @@
     Ldstr = 67,
     Ldtoken = 68,
     Ldvirtftn = 69,
+    /// <summary>Exits a protected region of code, unconditionally transferring control to a specific target instruction.</summary>
     Leave = 70,
     /// <summary>Allocates a certain number of bytes from the local dynamic memory pool and pushes the address (a transient pointer, type *) of the first allocated byte onto the evaluation stack.</summary>
     Localloc = 71,
