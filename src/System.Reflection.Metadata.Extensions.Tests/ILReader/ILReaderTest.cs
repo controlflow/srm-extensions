@@ -581,10 +581,79 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
           Assert.That(il.Count, Is.EqualTo(5));
           Assert.AreEqual(il[0].Code, Opcode.Call);
           Assert.AreEqual(il[1].Code, Opcode.Leave);
-          Assert.AreEqual(il[1].BranchTarget, il[0].Offset);
+          Assert.AreEqual(il[1].BranchTarget, il[4].Offset);
           Assert.AreEqual(il[2].Code, Opcode.Call);
           Assert.AreEqual(il[3].Code, Opcode.Endfinally);
           Assert.AreEqual(il[4].Code, Opcode.Ret);
+        });
+    }
+
+    [Test] public void ReadFaultBlock()
+    {
+      var writeLineMethod = typeof(Console).GetMethod("WriteLine", Type.EmptyTypes);
+      Assert.IsNotNull(writeLineMethod);
+
+      AssertReader(
+        gen =>
+        {
+          gen.BeginExceptionBlock();
+          gen.Emit(OpCodes.Call, writeLineMethod);
+          gen.BeginFaultBlock();
+          gen.Emit(OpCodes.Call, writeLineMethod);
+          gen.EndExceptionBlock();
+          gen.Emit(OpCodes.Ret);
+        },
+        il =>
+        {
+          Assert.That(il.Count, Is.EqualTo(5));
+          Assert.AreEqual(il[0].Code, Opcode.Call);
+          Assert.AreEqual(il[1].Code, Opcode.Leave);
+          Assert.AreEqual(il[1].BranchTarget, il[4].Offset);
+          Assert.AreEqual(il[2].Code, Opcode.Call);
+          Assert.AreEqual(il[3].Code, Opcode.Endfinally);
+          Assert.AreEqual(il[4].Code, Opcode.Ret);
+        });
+    }
+
+    [Test] public void ReadLeaveFilterCatch()
+    {
+      var writeLineMethod = typeof(Console).GetMethod("WriteLine", Type.EmptyTypes);
+      Assert.IsNotNull(writeLineMethod);
+
+      AssertReader(
+        gen =>
+        {
+          gen.BeginExceptionBlock();
+          gen.Emit(OpCodes.Call, writeLineMethod);
+          gen.BeginExceptFilterBlock();
+          gen.Emit(OpCodes.Pop);
+          gen.Emit(OpCodes.Ldc_I4_0);
+          gen.BeginCatchBlock(null);
+          gen.Emit(OpCodes.Call, writeLineMethod);
+          gen.BeginCatchBlock(typeof(object));
+          gen.Emit(OpCodes.Pop);
+          gen.Emit(OpCodes.Call, writeLineMethod);
+          gen.EndExceptionBlock();
+          gen.Emit(OpCodes.Ret);
+        },
+        il =>
+        {
+          Assert.That(il.Count, Is.EqualTo(11));
+          Assert.AreEqual(il[0].Code, Opcode.Call);
+          Assert.AreEqual(il[1].Code, Opcode.Leave);
+          Assert.AreEqual(il[1].BranchTarget, il[10].Offset);
+          Assert.AreEqual(il[2].Code, Opcode.Pop);
+          Assert.AreEqual(il[3].Code, Opcode.LdcI4);
+          Assert.AreEqual(il[3].ValueInt32, 0);
+          Assert.AreEqual(il[4].Code, Opcode.Endfilter);
+          Assert.AreEqual(il[5].Code, Opcode.Call);
+          Assert.AreEqual(il[6].Code, Opcode.Leave);
+          Assert.AreEqual(il[6].BranchTarget, il[10].Offset);
+          Assert.AreEqual(il[7].Code, Opcode.Pop);
+          Assert.AreEqual(il[8].Code, Opcode.Call);
+          Assert.AreEqual(il[9].Code, Opcode.Leave);
+          Assert.AreEqual(il[9].BranchTarget, il[10].Offset);
+          Assert.AreEqual(il[10].Code, Opcode.Ret);
         });
     }
 
