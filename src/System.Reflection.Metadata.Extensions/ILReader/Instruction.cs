@@ -154,6 +154,7 @@ namespace System.Reflection.Metadata.ILReader
         case Opcode.Unbox:
         case Opcode.UnboxAny:
         case Opcode.Castclass:
+        case Opcode.Constrained:
           return;
 
         default:

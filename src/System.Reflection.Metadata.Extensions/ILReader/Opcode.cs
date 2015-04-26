@@ -62,6 +62,7 @@
     Clt = 28,
     /// <summary>Compares the unsigned or unordered values 'value1' and 'value2'. If 'value1' is less than 'value2', then the integer value 1 (int32) is pushed onto the evaluation stack; otherwise 0 (int32) is pushed onto the evaluation stack.</summary>
     CltUn = 29,
+    /// <summary>Constrains the type on which a virtual method call is made.</summary>
     Constrained = 30,
     Conv = 31,
     ConvOvf = 32,

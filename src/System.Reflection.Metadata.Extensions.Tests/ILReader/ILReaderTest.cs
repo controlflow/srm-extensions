@@ -334,6 +334,35 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
         });
     }
 
+    [Test] public void ReadConstrained()
+    {
+      var toStringMethod = typeof(object).GetMethod("ToString", Type.EmptyTypes);
+
+      AssertReader<Func<int, string>>(
+        gen =>
+        {
+          gen.Emit(OpCodes.Ldarg_0);
+          gen.Emit(OpCodes.Constrained, typeof(int));
+          gen.Emit(OpCodes.Callvirt, toStringMethod);
+          gen.Emit(OpCodes.Ret);
+        },
+        il =>
+        {
+          Assert.That(il.Count, Is.EqualTo(4));
+          Assert.AreEqual(il[0].Code, Opcode.Ldarg);
+          Assert.AreEqual(il[0].ArgumentIndex, 0);
+          Assert.AreEqual(il[1].Code, Opcode.Constrained);
+          Assert.AreEqual(il[2].Code, Opcode.Callvirt);
+          Assert.AreEqual(il[3].Code, Opcode.Ret);
+
+          var resolvedType = myDynamicModule.ResolveType(il[1].TypeToken);
+          Assert.AreEqual(resolvedType, typeof(int));
+
+          var resolvedMember = myDynamicModule.ResolveMember(il[2].MethodToken);
+          Assert.AreEqual(toStringMethod, resolvedMember);
+        });
+    }
+
 
     private void AssertRelational(OpCode opCode, Opcode opcode)
     {
