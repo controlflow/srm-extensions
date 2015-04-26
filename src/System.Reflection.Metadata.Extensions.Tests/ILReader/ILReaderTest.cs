@@ -363,6 +363,139 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
         });
     }
 
+    [Test] public void ReadConvConvUn()
+    {
+      AssertReader<Func<int, float>>(
+        gen =>
+        {
+          gen.Emit(OpCodes.Ldarg_0);
+          gen.Emit(OpCodes.Conv_I);
+          gen.Emit(OpCodes.Conv_I1);
+          gen.Emit(OpCodes.Conv_I2);
+          gen.Emit(OpCodes.Conv_I4);
+          gen.Emit(OpCodes.Conv_I8);
+          gen.Emit(OpCodes.Conv_U);
+          gen.Emit(OpCodes.Conv_U1);
+          gen.Emit(OpCodes.Conv_U2);
+          gen.Emit(OpCodes.Conv_U4);
+          gen.Emit(OpCodes.Conv_U8);
+          gen.Emit(OpCodes.Conv_R4);
+          gen.Emit(OpCodes.Conv_R8);
+          gen.Emit(OpCodes.Conv_R_Un);
+          gen.Emit(OpCodes.Ret);
+        },
+        il =>
+        {
+          Assert.That(il.Count, Is.EqualTo(15));
+          Assert.AreEqual(il[0].Code, Opcode.Ldarg);
+          Assert.AreEqual(il[0].ArgumentIndex, 0);
+          Assert.AreEqual(il[1].Code, Opcode.Conv);
+          Assert.AreEqual(il[1].OperandType, ILType.NativeInt);
+          Assert.AreEqual(il[2].Code, Opcode.Conv);
+          Assert.AreEqual(il[2].OperandType, ILType.Int8);
+          Assert.AreEqual(il[3].Code, Opcode.Conv);
+          Assert.AreEqual(il[3].OperandType, ILType.Int16);
+          Assert.AreEqual(il[4].Code, Opcode.Conv);
+          Assert.AreEqual(il[4].OperandType, ILType.Int32);
+          Assert.AreEqual(il[5].Code, Opcode.Conv);
+          Assert.AreEqual(il[5].OperandType, ILType.Int64);
+          Assert.AreEqual(il[6].Code, Opcode.Conv);
+          Assert.AreEqual(il[6].OperandType, ILType.UNativeInt);
+          Assert.AreEqual(il[7].Code, Opcode.Conv);
+          Assert.AreEqual(il[7].OperandType, ILType.UInt8);
+          Assert.AreEqual(il[8].Code, Opcode.Conv);
+          Assert.AreEqual(il[8].OperandType, ILType.UInt16);
+          Assert.AreEqual(il[9].Code, Opcode.Conv);
+          Assert.AreEqual(il[9].OperandType, ILType.UInt32);
+          Assert.AreEqual(il[10].Code, Opcode.Conv);
+          Assert.AreEqual(il[10].OperandType, ILType.UInt64);
+          Assert.AreEqual(il[11].Code, Opcode.Conv);
+          Assert.AreEqual(il[11].OperandType, ILType.Float32);
+          Assert.AreEqual(il[12].Code, Opcode.Conv);
+          Assert.AreEqual(il[12].OperandType, ILType.Float64);
+          Assert.AreEqual(il[13].Code, Opcode.ConvUn);
+          Assert.AreEqual(il[13].OperandType, ILType.Float32);
+          Assert.AreEqual(il[14].Code, Opcode.Ret);
+        });
+    }
+
+    [Test] public void ReadConvOvfConvOvfUn()
+    {
+      AssertReader<Func<int, ulong>>(
+        gen =>
+        {
+          gen.Emit(OpCodes.Ldarg_0);
+          gen.Emit(OpCodes.Conv_Ovf_I);
+          gen.Emit(OpCodes.Conv_Ovf_I_Un);
+          gen.Emit(OpCodes.Conv_Ovf_I1);
+          gen.Emit(OpCodes.Conv_Ovf_I1_Un);
+          gen.Emit(OpCodes.Conv_Ovf_I2);
+          gen.Emit(OpCodes.Conv_Ovf_I2_Un);
+          gen.Emit(OpCodes.Conv_Ovf_I4);
+          gen.Emit(OpCodes.Conv_Ovf_I4_Un);
+          gen.Emit(OpCodes.Conv_Ovf_I8);
+          gen.Emit(OpCodes.Conv_Ovf_I8_Un);
+          gen.Emit(OpCodes.Conv_Ovf_U);
+          gen.Emit(OpCodes.Conv_Ovf_U_Un);
+          gen.Emit(OpCodes.Conv_Ovf_U1);
+          gen.Emit(OpCodes.Conv_Ovf_U1_Un);
+          gen.Emit(OpCodes.Conv_Ovf_U2);
+          gen.Emit(OpCodes.Conv_Ovf_U2_Un);
+          gen.Emit(OpCodes.Conv_Ovf_U4);
+          gen.Emit(OpCodes.Conv_Ovf_U4_Un);
+          gen.Emit(OpCodes.Conv_Ovf_U8);
+          gen.Emit(OpCodes.Conv_Ovf_U8_Un);
+          gen.Emit(OpCodes.Ret);
+        },
+        il =>
+        {
+          Assert.That(il.Count, Is.EqualTo(22));
+          Assert.AreEqual(il[0].Code, Opcode.Ldarg);
+          Assert.AreEqual(il[0].ArgumentIndex, 0);
+          Assert.AreEqual(il[1].Code, Opcode.ConvOvf);
+          Assert.AreEqual(il[1].OperandType, ILType.NativeInt);
+          Assert.AreEqual(il[2].Code, Opcode.ConvOvfUn);
+          Assert.AreEqual(il[2].OperandType, ILType.NativeInt);
+          Assert.AreEqual(il[3].Code, Opcode.ConvOvf);
+          Assert.AreEqual(il[3].OperandType, ILType.Int8);
+          Assert.AreEqual(il[4].Code, Opcode.ConvOvfUn);
+          Assert.AreEqual(il[4].OperandType, ILType.Int8);
+          Assert.AreEqual(il[5].Code, Opcode.ConvOvf);
+          Assert.AreEqual(il[5].OperandType, ILType.Int16);
+          Assert.AreEqual(il[6].Code, Opcode.ConvOvfUn);
+          Assert.AreEqual(il[6].OperandType, ILType.Int16);
+          Assert.AreEqual(il[7].Code, Opcode.ConvOvf);
+          Assert.AreEqual(il[7].OperandType, ILType.Int32);
+          Assert.AreEqual(il[8].Code, Opcode.ConvOvfUn);
+          Assert.AreEqual(il[8].OperandType, ILType.Int32);
+          Assert.AreEqual(il[9].Code, Opcode.ConvOvf);
+          Assert.AreEqual(il[9].OperandType, ILType.Int64);
+          Assert.AreEqual(il[10].Code, Opcode.ConvOvfUn);
+          Assert.AreEqual(il[10].OperandType, ILType.Int64);
+          Assert.AreEqual(il[11].Code, Opcode.ConvOvf);
+          Assert.AreEqual(il[11].OperandType, ILType.UNativeInt);
+          Assert.AreEqual(il[12].Code, Opcode.ConvOvfUn);
+          Assert.AreEqual(il[12].OperandType, ILType.UNativeInt);
+          Assert.AreEqual(il[13].Code, Opcode.ConvOvf);
+          Assert.AreEqual(il[13].OperandType, ILType.UInt8);
+          Assert.AreEqual(il[14].Code, Opcode.ConvOvfUn);
+          Assert.AreEqual(il[14].OperandType, ILType.UInt8);
+          Assert.AreEqual(il[15].Code, Opcode.ConvOvf);
+          Assert.AreEqual(il[15].OperandType, ILType.UInt16);
+          Assert.AreEqual(il[16].Code, Opcode.ConvOvfUn);
+          Assert.AreEqual(il[16].OperandType, ILType.UInt16);
+          Assert.AreEqual(il[17].Code, Opcode.ConvOvf);
+          Assert.AreEqual(il[17].OperandType, ILType.UInt32);
+          Assert.AreEqual(il[18].Code, Opcode.ConvOvfUn);
+          Assert.AreEqual(il[18].OperandType, ILType.UInt32);
+          Assert.AreEqual(il[19].Code, Opcode.ConvOvf);
+          Assert.AreEqual(il[19].OperandType, ILType.UInt64);
+          Assert.AreEqual(il[20].Code, Opcode.ConvOvfUn);
+          Assert.AreEqual(il[20].OperandType, ILType.UInt64);
+          Assert.AreEqual(il[21].Code, Opcode.Ret);
+        });
+    }
+
 
     private void AssertRelational(OpCode opCode, Opcode opcode)
     {
