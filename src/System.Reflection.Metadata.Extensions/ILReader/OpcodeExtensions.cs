@@ -31,6 +31,10 @@
         case Opcode.CgtUn:
         case Opcode.Clt:
         case Opcode.CltUn:
+        case Opcode.Constrained:
+        case Opcode.Conv:
+        case Opcode.ConvUn:
+        case Opcode.Tail:
           return false;
 
         case Opcode.AddOvf:
@@ -42,15 +46,13 @@
         case Opcode.Calli:
         case Opcode.Callvirt:
         case Opcode.Castclass:
-          return true;
-
         case Opcode.Ckfinite:
-        case Opcode.Constrained:
-        case Opcode.Conv:
         case Opcode.ConvOvf:
         case Opcode.ConvOvfUn:
-        case Opcode.ConvUn:
         case Opcode.Cpblk:
+        case Opcode.Localloc:
+          return true;
+
         case Opcode.Cpobj:
         case Opcode.Div:
         case Opcode.DivUn:
@@ -86,7 +88,6 @@
         case Opcode.Ldtoken:
         case Opcode.Ldvirtftn:
         case Opcode.Leave:
-        case Opcode.Localloc:
         case Opcode.Mkrefany:
         case Opcode.Mul:
         case Opcode.MulOvf:
@@ -128,11 +129,9 @@
         case Opcode.SubOvf:
         case Opcode.SubOvfUn:
         case Opcode.Switch:
-        case Opcode.Tail:
         case Opcode.Throw:
         case Opcode.Unaligned:
         case Opcode.Volatile:
-        
           return true;
       }
 

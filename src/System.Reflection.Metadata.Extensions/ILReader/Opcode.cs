@@ -68,9 +68,11 @@
     Conv = 31,
     /// <summary>Converts the signed value on top of the evaluation stack to some signed type, throwing <see cref="T:System.OverflowException"/> on overflow.</summary>
     ConvOvf = 32,
+    /// <summary>Converts the unsigned value on top of the evaluation stack to some unsigned type, throwing <see cref="T:System.OverflowException"/> on overflow.</summary>
     ConvOvfUn = 33,
     /// <summary>Converts the unsigned (integer) value on top of the evaluation stack to some (float32) type.</summary>
     ConvUn = 34,
+
     Cpblk = 35,
     Cpobj = 36,
     Div = 37,

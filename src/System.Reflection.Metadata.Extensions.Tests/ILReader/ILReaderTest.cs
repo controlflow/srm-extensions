@@ -496,6 +496,31 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
         });
     }
 
+    [Test] public void ReadLocallocCpblk()
+    {
+      AssertReader<Func<int, float>>(
+        gen =>
+        {
+          gen.Emit(OpCodes.Ldc_I4_8);
+          gen.Emit(OpCodes.Localloc);
+          gen.Emit(OpCodes.Dup);
+          gen.Emit(OpCodes.Ldc_I4_8);
+          gen.Emit(OpCodes.Cpblk);
+          gen.Emit(OpCodes.Ret);
+        },
+        il =>
+        {
+          Assert.That(il.Count, Is.EqualTo(6));
+          Assert.AreEqual(il[0].Code, Opcode.LdcI4);
+          Assert.AreEqual(il[0].ValueInt32, 8);
+          Assert.AreEqual(il[1].Code, Opcode.Localloc);
+          Assert.AreEqual(il[2].Code, Opcode.Dup);
+          Assert.AreEqual(il[3].Code, Opcode.LdcI4);
+          Assert.AreEqual(il[3].ValueInt32, 8);
+          Assert.AreEqual(il[4].Code, Opcode.Cpblk);
+          Assert.AreEqual(il[5].Code, Opcode.Ret);
+        });
+    }
 
     private void AssertRelational(OpCode opCode, Opcode opcode)
     {
