@@ -496,29 +496,40 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
         });
     }
 
-    [Test] public void ReadLocallocCpblk()
+    [Test] public void ReadLocallocCpblkCpobj()
     {
-      AssertReader<Func<int, float>>(
+      AssertReader(
         gen =>
         {
           gen.Emit(OpCodes.Ldc_I4_8);
           gen.Emit(OpCodes.Localloc);
           gen.Emit(OpCodes.Dup);
+          gen.Emit(OpCodes.Dup);
           gen.Emit(OpCodes.Ldc_I4_8);
           gen.Emit(OpCodes.Cpblk);
+          gen.Emit(OpCodes.Pop);
+          gen.Emit(OpCodes.Dup);
+          gen.Emit(OpCodes.Cpobj, typeof(int));
           gen.Emit(OpCodes.Ret);
         },
         il =>
         {
-          Assert.That(il.Count, Is.EqualTo(6));
+          Assert.That(il.Count, Is.EqualTo(10));
           Assert.AreEqual(il[0].Code, Opcode.LdcI4);
           Assert.AreEqual(il[0].ValueInt32, 8);
           Assert.AreEqual(il[1].Code, Opcode.Localloc);
           Assert.AreEqual(il[2].Code, Opcode.Dup);
-          Assert.AreEqual(il[3].Code, Opcode.LdcI4);
-          Assert.AreEqual(il[3].ValueInt32, 8);
-          Assert.AreEqual(il[4].Code, Opcode.Cpblk);
-          Assert.AreEqual(il[5].Code, Opcode.Ret);
+          Assert.AreEqual(il[3].Code, Opcode.Dup);
+          Assert.AreEqual(il[4].Code, Opcode.LdcI4);
+          Assert.AreEqual(il[4].ValueInt32, 8);
+          Assert.AreEqual(il[5].Code, Opcode.Cpblk);
+          Assert.AreEqual(il[6].Code, Opcode.Pop);
+          Assert.AreEqual(il[7].Code, Opcode.Dup);
+          Assert.AreEqual(il[8].Code, Opcode.Cpobj);
+          Assert.AreEqual(il[9].Code, Opcode.Ret);
+
+          var resolvedType = myDynamicModule.ResolveType(il[8].TypeToken);
+          Assert.AreEqual(typeof(int), resolvedType);
         });
     }
 

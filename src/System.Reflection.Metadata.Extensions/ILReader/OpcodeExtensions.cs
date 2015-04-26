@@ -51,9 +51,9 @@
         case Opcode.ConvOvfUn:
         case Opcode.Cpblk:
         case Opcode.Localloc:
+        case Opcode.Cpobj:
           return true;
 
-        case Opcode.Cpobj:
         case Opcode.Div:
         case Opcode.DivUn:
         case Opcode.Dup:
