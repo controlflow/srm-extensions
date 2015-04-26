@@ -34,6 +34,12 @@
         case Opcode.Constrained:
         case Opcode.Conv:
         case Opcode.ConvUn:
+        case Opcode.Div:
+        case Opcode.DivUn:
+        case Opcode.Dup:
+        case Opcode.Endfilter:
+        case Opcode.Endfinally:
+        case Opcode.Switch:
         case Opcode.Tail:
           return false;
 
@@ -54,11 +60,6 @@
         case Opcode.Cpobj:
           return true;
 
-        case Opcode.Div:
-        case Opcode.DivUn:
-        case Opcode.Dup:
-        case Opcode.Endfilter:
-        case Opcode.Endfinally:
         case Opcode.Initblk:
         case Opcode.Initobj:
         case Opcode.Isinst:
@@ -128,7 +129,6 @@
         case Opcode.Sub:
         case Opcode.SubOvf:
         case Opcode.SubOvfUn:
-        case Opcode.Switch:
         case Opcode.Throw:
         case Opcode.Unaligned:
         case Opcode.Volatile:

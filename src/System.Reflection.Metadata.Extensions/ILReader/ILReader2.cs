@@ -4,7 +4,7 @@
   {
     public static int Count(BlobReader reader)
     {
-      int count = 0;
+      var count = 0;
 
       while (reader.RemainingBytes > 0)
       {
@@ -239,7 +239,6 @@
               case 0x1A: // rethrow
               case 0x1D: // refanytype
               case 0x1E: // readonly.
-
                 continue;
               case 0x06: // ldftn
               case 0x07: // ldvirtftn

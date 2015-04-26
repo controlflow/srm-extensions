@@ -49,8 +49,8 @@ class Program
           ilBytes = Math.Max(ilBytes, ilReader.RemainingBytes);
 
           var count = ILReaderImpl.Count(ilReader);
-
-          var instructions = new List<Instruction>(ilReader.RemainingBytes / 2);
+          
+          var instructions = new List<Instruction>(count);
           try
           {
             ILReaderImpl.Read(ilReader, instructions);
@@ -64,9 +64,6 @@ class Program
           
             throw;
           }
-
-          if (instructions.Count != count)
-            throw new ArgumentException();
 
           instructionsCount += instructions.Count;
 

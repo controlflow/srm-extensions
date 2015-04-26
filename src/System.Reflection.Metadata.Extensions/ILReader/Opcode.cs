@@ -163,6 +163,7 @@
     Sub = 111,
     SubOvf = 112,
     SubOvfUn = 113,
+    /// <summary>Implements a jump table.</summary>
     Switch = 114,
     /// <summary>Performs a postfixed method call instruction such that the current method's stack frame is removed before the actual call instruction is executed.</summary>
     Tail = 115,
