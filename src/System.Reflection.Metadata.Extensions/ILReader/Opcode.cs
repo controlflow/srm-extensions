@@ -76,8 +76,11 @@
     Cpblk = 35,
     /// <summary>Copies the value type located at the address of an object (type &amp;, * or native int) to the address of the destination object (type &amp;, * or native int).</summary>
     Cpobj = 36,
+    /// <summary>Divides two values and pushes the result as a floating-point (type F) or quotient (type int32) onto the evaluation stack.</summary>
     Div = 37,
+    /// <summary>Divides two unsigned integer values and pushes the result (int32) onto the evaluation stack.</summary>
     DivUn = 38,
+    /// <summary>Copies the current topmost value on the evaluation stack, and then pushes the copy onto the evaluation stack.</summary>
     Dup = 39,
     Endfilter = 40,
     Endfinally = 41,

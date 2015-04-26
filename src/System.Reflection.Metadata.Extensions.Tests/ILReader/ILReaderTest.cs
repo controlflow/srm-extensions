@@ -533,6 +533,33 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
         });
     }
 
+    [Test] public void ReadDiv()
+    {
+      AssertReader<Func<int, int, int, int>>(
+        gen =>
+        {
+          gen.Emit(OpCodes.Ldarg_0);
+          gen.Emit(OpCodes.Ldarg_S, (byte) 1);
+          gen.Emit(OpCodes.Ldarg, (short) 2);
+          gen.Emit(OpCodes.Div);
+          gen.Emit(OpCodes.Div_Un);
+          gen.Emit(OpCodes.Ret);
+        },
+        il =>
+        {
+          Assert.That(il.Count, Is.EqualTo(6));
+          Assert.AreEqual(il[0].Code, Opcode.Ldarg);
+          Assert.AreEqual(il[0].ArgumentIndex, 0);
+          Assert.AreEqual(il[1].Code, Opcode.Ldarg);
+          Assert.AreEqual(il[1].ArgumentIndex, 1);
+          Assert.AreEqual(il[2].Code, Opcode.Ldarg);
+          Assert.AreEqual(il[2].ArgumentIndex, 2);
+          Assert.AreEqual(il[3].Code, Opcode.Div);
+          Assert.AreEqual(il[4].Code, Opcode.DivUn);
+          Assert.AreEqual(il[5].Code, Opcode.Ret);
+        });
+    }
+
     private void AssertRelational(OpCode opCode, Opcode opcode)
     {
       AssertReader<Func<bool>>(
