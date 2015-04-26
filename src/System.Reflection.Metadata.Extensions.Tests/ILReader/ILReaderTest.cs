@@ -285,6 +285,56 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
         });
     }
 
+    [Test] public void ReadCeqCgtCgtUnCltCltUn()
+    {
+      AssertReader<Func<int, int>>(
+        gen =>
+        {
+          gen.Emit(OpCodes.Ldarg_0);
+          gen.Emit(OpCodes.Ldarg_0);
+          gen.Emit(OpCodes.Ceq);
+          gen.Emit(OpCodes.Ldarg_0);
+          gen.Emit(OpCodes.Cgt);
+          gen.Emit(OpCodes.Ldarg_0);
+          gen.Emit(OpCodes.Cgt_Un);
+          gen.Emit(OpCodes.Ldarg_0);
+          gen.Emit(OpCodes.Clt);
+          gen.Emit(OpCodes.Ldarg_0);
+          gen.Emit(OpCodes.Clt_Un);
+          gen.Emit(OpCodes.Ret);
+        },
+        il =>
+        {
+          Assert.That(il.Count, Is.EqualTo(12));
+          Assert.AreEqual(il[2].Code, Opcode.Ceq);
+          Assert.AreEqual(il[4].Code, Opcode.Cgt);
+          Assert.AreEqual(il[6].Code, Opcode.CgtUn);
+          Assert.AreEqual(il[8].Code, Opcode.Clt);
+          Assert.AreEqual(il[10].Code, Opcode.CltUn);
+          Assert.AreEqual(il[11].Code, Opcode.Ret);
+        });
+    }
+
+    [Test] public void ReadCkfinite()
+    {
+      AssertReader<Action<float>>(
+        gen =>
+        {
+          gen.Emit(OpCodes.Ldarg_0);
+          gen.Emit(OpCodes.Ckfinite);
+          gen.Emit(OpCodes.Ret);
+        },
+        il =>
+        {
+          Assert.That(il.Count, Is.EqualTo(3));
+          Assert.AreEqual(il[0].Code, Opcode.Ldarg);
+          Assert.AreEqual(il[0].ArgumentIndex, 0);
+          Assert.AreEqual(il[1].Code, Opcode.Ckfinite);
+          Assert.AreEqual(il[2].Code, Opcode.Ret);
+        });
+    }
+
+
     private void AssertRelational(OpCode opCode, Opcode opcode)
     {
       AssertReader<Func<bool>>(

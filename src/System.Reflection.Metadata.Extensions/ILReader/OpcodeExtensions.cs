@@ -26,6 +26,11 @@
         case Opcode.Break:
         case Opcode.Brfalse:
         case Opcode.Brtrue:
+        case Opcode.Ceq:
+        case Opcode.Cgt:
+        case Opcode.CgtUn:
+        case Opcode.Clt:
+        case Opcode.CltUn:
           return false;
 
         case Opcode.AddOvf:
@@ -33,18 +38,13 @@
         case Opcode.Box:
         case Opcode.Unbox:
         case Opcode.UnboxAny:
-          return true;
-
         case Opcode.Call:
         case Opcode.Calli:
         case Opcode.Callvirt:
         case Opcode.Castclass:
-        case Opcode.Ceq:
-        case Opcode.Cgt:
-        case Opcode.CgtUn:
+          return true;
+
         case Opcode.Ckfinite:
-        case Opcode.Clt:
-        case Opcode.CltUn:
         case Opcode.Constrained:
         case Opcode.Conv:
         case Opcode.ConvOvf:

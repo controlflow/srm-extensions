@@ -50,11 +50,17 @@
     Callvirt = 22,
     /// <summary>Attempts to cast an object passed by reference to the specified class.</summary>
     Castclass = 23,
+    /// <summary>Compares two values. If they are equal, the integer value 1 (int32) is pushed onto the evaluation stack; otherwise 0 (int32) is pushed onto the evaluation stack.</summary>
     Ceq = 24,
+    /// <summary>Compares two values. If the first value is greater than the second, the integer value 1 (int32) is pushed onto the evaluation stack; otherwise 0 (int32) is pushed onto the evaluation stack.</summary>
     Cgt = 25,
+    /// <summary>Compares two unsigned or unordered values. If the first value is greater than the second, the integer value 1 (int32) is pushed onto the evaluation stack; otherwise 0 (int32) is pushed onto the evaluation stack.</summary>
     CgtUn = 26,
+    /// <summary>Throws <see cref="T:System.ArithmeticException"/> if value is not a finite number.</summary>
     Ckfinite = 27,
+    /// <summary>Compares two values. If the first value is less than the second, the integer value 1 (int32) is pushed onto the evaluation stack; otherwise 0 (int32) is pushed onto the evaluation stack.</summary>
     Clt = 28,
+    /// <summary>Compares the unsigned or unordered values 'value1' and 'value2'. If 'value1' is less than 'value2', then the integer value 1 (int32) is pushed onto the evaluation stack; otherwise 0 (int32) is pushed onto the evaluation stack.</summary>
     CltUn = 29,
     Constrained = 30,
     Conv = 31,
