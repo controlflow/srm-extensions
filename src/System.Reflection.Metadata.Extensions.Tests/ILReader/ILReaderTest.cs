@@ -757,13 +757,10 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
       {
         var blobReader = new BlobReader(ptr, ilLength);
 
-        var instructions = new List<Instruction>();
-        ILReaderImpl.Read(blobReader, instructions);
-
         var count = ILReaderImpl.Count(blobReader);
-        Assert.That(count, Is.EqualTo(instructions.Count));
+        var instructions = ILReaderImpl.ReadUnsafe(blobReader, count);
 
-        assertion(instructions);
+        assertion(instructions.ToList());
       }
     }
   }

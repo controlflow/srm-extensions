@@ -10,43 +10,12 @@ namespace System.Reflection.Metadata.ILReader
 {
   [StructLayout(LayoutKind.Auto)]
   [SuppressMessage("ReSharper", "NotResolvedInText")]
-  public unsafe struct Instruction
+  public struct Instruction
   {
-    //internal readonly int myOffset;
-    internal Opcode myCode;
-    internal int myIntOperand;
-    //internal object myOperand;
+    internal Opcode myCode; // todo: rename to Code
+    internal int myIntOperand; // todo: rename to Operand
 
-    public Instruction(Opcode code)
-    {
-      myCode = code;
-      myIntOperand = 0;
-      //myOperand = null;
-    }
-
-    public Instruction(int offset, Opcode code)
-    {
-      //myOffset = offset;
-      myCode = code;
-      myIntOperand = 0;
-      //myOperand = null;
-    }
-
-    public Instruction(int offset, Opcode code, int operand) : this(offset, code)
-    {
-      myIntOperand = operand;
-    }
-
-    public Instruction(int offset, Opcode code, long operand) : this(offset, code)
-    {
-      //myOperand = operand;
-    }
-
-    public Instruction(int offset, Opcode code, [NotNull] int[] switchLabels) : this(offset, code)
-    {
-      //myOperand = switchLabels;
-    }
-
+    // todo: remove!
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int Offset
     {
@@ -136,6 +105,7 @@ namespace System.Reflection.Metadata.ILReader
       }
     }
 
+    // int[] GetSwitchTargets(ILStream context)
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int[] SwitchTargets
     {

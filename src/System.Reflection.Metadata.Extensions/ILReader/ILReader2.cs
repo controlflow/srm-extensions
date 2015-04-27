@@ -1,9 +1,32 @@
-﻿namespace System.Reflection.Metadata.ILReader
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
+
+namespace System.Reflection.Metadata.ILReader
 {
+  public struct BodyInspectionInfo
+  {
+    public int InstructionsCount;
+    public int Int64OperandsCount; // allocate array
+    public int SwitchJumpListsCount;
+    public List<int> SortedJumpOffsets; // todo: fill, can't be empty!
+  }
+
+  struct Jump
+  {
+    public int TargetOffset;
+    public int SourceIndex; // !!!
+  }
+
+  // if (jump.TargetOffset == offset) { instructions[jump.SourceIndex].myIntOperand = index; }
+
   public partial class ILReaderImpl
   {
     public static int Count(BlobReader reader)
     {
+      var jumpOffset = new List<int>();
+      jumpOffset.Add(reader.Offset);
+      jumpOffset.Sort();
+
       var count = 0;
 
       while (reader.RemainingBytes > 0)

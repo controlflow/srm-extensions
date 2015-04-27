@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -17,9 +16,7 @@ class Program
     //var text = builder.BuildCountMethod();
 
     var dllFiles = Directory.GetFiles(@"C:\Work\ReSharper\bin", "*.dll");
-
     //var dllFiles = new[] {typeof (object).Assembly.Location};
-
 
     long ilBytes = 0, instructionsCount = 0;
     var stopwatch = Stopwatch.StartNew();
@@ -50,22 +47,13 @@ class Program
           ilBytes = Math.Max(ilBytes, ilReader.RemainingBytes);
 
           var count = ILReaderImpl.Count(ilReader);
-          
-          //var instructions = new List<Instruction>(count);
           try
           {
-            //ILReaderImpl.Read(ilReader, instructions);
-
-            var xs = ILReaderImpl.ReadUnsafe(ilReader, count);
-            GC.KeepAlive(xs);
+            var instructions = ILReaderImpl.ReadUnsafe(ilReader, count);
+            GC.KeepAlive(instructions);
           }
           catch
           {
-            //foreach (var instruction in instructions)
-            //{
-            //  Console.WriteLine(instruction);
-            //}
-          
             throw;
           }
 
