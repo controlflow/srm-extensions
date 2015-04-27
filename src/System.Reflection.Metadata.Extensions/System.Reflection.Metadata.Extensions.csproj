@@ -37,6 +37,45 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Annotations\HasThrowAnnotation.cs" />
+    <Compile Include="Decoding\ArrayShape.cs" />
+    <Compile Include="Decoding\AssemblyNameParsing\AssemblyNameComponents.cs" />
+    <Compile Include="Decoding\AssemblyNameParsing\AssemblyNameParser.AssemblyNameBuilder.cs" />
+    <Compile Include="Decoding\AssemblyNameParsing\AssemblyNameParser.cs" />
+    <Compile Include="Decoding\AssemblyNameParsing\AssemblyNameParser.ParseMode.cs" />
+    <Compile Include="Decoding\CustomAttributeDecoder.cs" />
+    <Compile Include="Decoding\CustomAttributeNamedArgument.cs" />
+    <Compile Include="Decoding\CustomAttributeTypedArgument.cs" />
+    <Compile Include="Decoding\CustomAttributeValue.cs" />
+    <Compile Include="Decoding\CustomModifier.cs" />
+    <Compile Include="Decoding\ICustomAttributeTypeProvider.cs" />
+    <Compile Include="Decoding\ISignatureTypeProvider.cs" />
+    <Compile Include="Decoding\ITypeProvider.cs" />
+    <Compile Include="Decoding\MethodSignature.cs" />
+    <Compile Include="Decoding\PrimitiveTypeCode.cs" />
+    <Compile Include="Decoding\SignatureDecoder.cs" />
+    <Compile Include="Decoding\StringComparers.cs" />
+    <Compile Include="Decoding\Strings2.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Strings2.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Decoding\TypeNameParsing\Delimiters.cs" />
+    <Compile Include="Decoding\TypeNameParsing\IdentifierOptions.cs" />
+    <Compile Include="Decoding\TypeNameParsing\ITypeNameParserTypeProvider.cs" />
+    <Compile Include="Decoding\TypeNameParsing\QuotedIdentifierParser.cs" />
+    <Compile Include="Decoding\TypeNameParsing\StringReader.cs" />
+    <Compile Include="Decoding\TypeNameParsing\Tokenizer.cs" />
+    <Compile Include="Decoding\TypeNameParsing\Tokenizer.ParseOptions.cs" />
+    <Compile Include="Decoding\TypeNameParsing\Tokenizer.Token.cs" />
+    <Compile Include="Decoding\TypeNameParsing\TokenType.cs" />
+    <Compile Include="Decoding\TypeNameParsing\TypeModifier.cs" />
+    <Compile Include="Decoding\TypeNameParsing\TypeModifierType.cs" />
+    <Compile Include="Decoding\TypeNameParsing\TypeNameFormatErrorId.cs" />
+    <Compile Include="Decoding\TypeNameParsing\TypeNameFormatException.cs" />
+    <Compile Include="Decoding\TypeNameParsing\TypeNameParser.cs" />
+    <Compile Include="Decoding\TypeNameParsing\TypeNameParserOfT.cs" />
+    <Compile Include="Decoding\TypeNameParsing\TypeNameParserOfT.ParseMode.cs" />
+    <Compile Include="Decoding\TypeNameParsing\TypeNameParserOfT.TypeBuilder.cs" />
     <Compile Include="ILReader\ILBody.cs" />
     <Compile Include="ILReader\ILReaderImpl.Pass1.cs" />
     <Compile Include="ILReader\ILReaderImpl.Pass2.cs" />
@@ -74,6 +113,12 @@
   <ItemGroup>
     <Folder Include="ControlFlow\" />
     <Folder Include="Interpreter\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Decoding\Strings2.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings2.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
