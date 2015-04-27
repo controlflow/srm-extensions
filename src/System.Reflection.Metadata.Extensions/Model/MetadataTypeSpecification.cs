@@ -23,10 +23,7 @@ namespace System.Reflection.Metadata.Model
       var signature = metadataReader.GetBlobReader(typeSpecification.Signature);
       var signatureTypeCode = signature.ReadSignatureTypeCode();
 
-      switch (signatureTypeCode)
-      {
-        
-      }
+      
 
 
       //metadataReader.GetTypeSpecification().

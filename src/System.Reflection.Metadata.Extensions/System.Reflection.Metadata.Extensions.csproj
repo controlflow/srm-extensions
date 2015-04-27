@@ -80,6 +80,7 @@
     <Compile Include="ILReader\ILReaderImpl.Pass1.cs" />
     <Compile Include="ILReader\ILReaderImpl.Pass2.cs" />
     <Compile Include="ILReader\MetadataILBody.cs" />
+    <Compile Include="Model\MetadataModelTypeProvider.cs" />
     <Compile Include="Model\MetadataAssemblyReference.cs" />
     <Compile Include="Model\MetadataMethodDefinition.cs" />
     <Compile Include="Model\MetadataParameter.cs" />

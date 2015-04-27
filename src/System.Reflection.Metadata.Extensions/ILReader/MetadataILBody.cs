@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Reflection.Metadata.Decoding;
-using System.Reflection.Metadata.Model;
 using System.Reflection.PortableExecutable;
 using JetBrains.Annotations;
 
@@ -11,7 +10,7 @@ namespace System.Reflection.Metadata.ILReader
     private readonly MethodDefinition myMethodDefinition;
     [NotNull] private readonly MethodBodyBlock myMethodBodyBlock;
 
-    public MetadataILBody(MethodDefinition methodDefinition, [NotNull] MethodBodyBlock methodBodyBlock, [NotNull] Instruction[] instructions) : base(instructions, methodBodyBlock.Size)
+    private MetadataILBody(MethodDefinition methodDefinition, [NotNull] MethodBodyBlock methodBodyBlock, [NotNull] Instruction[] instructions) : base(instructions, methodBodyBlock.Size)
     {
       myMethodDefinition = methodDefinition;
       myMethodBodyBlock = methodBodyBlock;
@@ -53,50 +52,24 @@ namespace System.Reflection.Metadata.ILReader
       }
       catch (InvalidOperationException) { return null; }
 
+      // todo: pass inside
       var metadataReader = reader.GetMetadataReader(MetadataReaderOptions.None);
 
       var standaloneSignatureHandle = methodBodyBlock.LocalSignature;
       if (!standaloneSignatureHandle.IsNil)
       {
-        var signature = metadataReader.GetStandaloneSignature(standaloneSignatureHandle);
-
-
-        var localSignature = SignatureDecoder.DecodeLocalSignature(standaloneSignatureHandle, new Foo());
-
-        
-
-        var varSigReader = metadataReader.GetBlobReader(signature.Signature);
-        var signatureHeader = varSigReader.ReadSignatureHeader();
-
-        if (signatureHeader.Kind == SignatureKind.LocalVariables)
-        {
-          var variablesCount = varSigReader.ReadCompressedInteger();
-
-          if (variablesCount > 0)
-          {
-            
-          }
-
-          //varSigReader.ReadSignatureTypeCode()
-
-          //blobReader.ReadSignatureTypeCode()
-        }
-
-        //var variablesCount = signatureHeader.RawValue;
-
-        var typeCode = varSigReader.ReadSignatureTypeCode();
-
-
-
-
+        var standaloneSignature = metadataReader.GetStandaloneSignature(standaloneSignatureHandle);
+        var localSignature = SignatureDecoder.DecodeLocalSignature(
+          standaloneSignatureHandle, new MetadataModelTypeProvider(metadataReader));
       }
 
       var instructions = ILReaderImpl.Pass2(blobReader, info.InstructionsCount);
+      foreach (var instruction in instructions)
+      {
+        
+      }
+
       return new MetadataILBody(methodDefinition, methodBodyBlock, instructions);
     }
-  }
-
-  public class Foo : ISignatureTypeProvider<MetadataTypeReference>
-  {
   }
 }
