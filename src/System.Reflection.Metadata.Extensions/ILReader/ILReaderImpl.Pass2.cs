@@ -2,14 +2,13 @@ namespace System.Reflection.Metadata.ILReader
 {
   public partial class ILReaderImpl
   {
-    public static unsafe Instruction[] ReadUnsafe(BlobReader reader, int count)
+    public static unsafe Instruction[] Pass2(BlobReader reader, int count)
     {
-      var instructions1 = new Instruction[count];
-      fixed (Instruction* instructions = instructions1)
+      var array = new Instruction[count];// todo: pass in
+
+      fixed (Instruction* instructions = array)
 
       for (var index = 0; index < count; index++)
-
-      //for (var index = 0; index < instructions.Length; index++)
       {
         switch (reader.ReadByte())
         {
@@ -867,7 +866,7 @@ namespace System.Reflection.Metadata.ILReader
         }
       }
 
-      return instructions1;
+      return array;
     }
   }
 }

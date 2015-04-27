@@ -1,32 +1,37 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Immutable;
+using System.Runtime.InteropServices;
 
 namespace System.Reflection.Metadata.ILReader
 {
+  // todo: hide to internal
   public struct BodyInspectionInfo
   {
     public int InstructionsCount;
-    public int Int64OperandsCount; // allocate array
+    public int Int64OperandsCount; // allocate array of corresponding size? or just store offsets?
     public int SwitchJumpListsCount;
-    public List<int> SortedJumpOffsets; // todo: fill, can't be empty!
+    public List<MsilJump> SortedJumps; // todo: fill, can't be empty!
   }
 
-  struct Jump
+  // todo: hide to internal
+  [StructLayout(LayoutKind.Auto)]
+  public struct MsilJump
   {
-    public int TargetOffset;
-    public int SourceIndex; // !!!
+    public readonly int TargetOffset;
+    public readonly int SourceIndex;
+
+    public MsilJump(int targetOffset, int sourceIndex)
+    {
+      TargetOffset = targetOffset;
+      SourceIndex = sourceIndex;
+    }
   }
 
-  // if (jump.TargetOffset == offset) { instructions[jump.SourceIndex].myIntOperand = index; }
+  // if (jump.TargetOffset == offset) { instructions[jump.SourceIndex].myIntOperand = index; jump = nextJump; }
 
   public partial class ILReaderImpl
   {
-    public static int Count(BlobReader reader)
+    public static void Pass1(BlobReader reader, ref BodyInspectionInfo info)
     {
-      var jumpOffset = new List<int>();
-      jumpOffset.Add(reader.Offset);
-      jumpOffset.Sort();
-
       var count = 0;
 
       while (reader.RemainingBytes > 0)
@@ -291,7 +296,8 @@ namespace System.Reflection.Metadata.ILReader
         }
       }
 
-      return count;
+      info.InstructionsCount = count;
+
     }
   }
 }

@@ -36,12 +36,12 @@ namespace System.Reflection.Metadata.Model
     }
 
     [NotNull, Pure]
-    public static IEnumerable<MetadataMethod> GetMethodDefinitions([NotNull] this MetadataReader metadataReader)
+    public static IEnumerable<MetadataMethodDefinition> GetMethodDefinitions([NotNull] this MetadataReader metadataReader)
     {
       foreach (var definitionHandle in metadataReader.MethodDefinitions)
       {
         var definition = metadataReader.GetMethodDefinition(definitionHandle);
-        yield return new MetadataMethod(metadataReader, definition);
+        yield return new MetadataMethodDefinition(metadataReader, definition);
       }
     }
 

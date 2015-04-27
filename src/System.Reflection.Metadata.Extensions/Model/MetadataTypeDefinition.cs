@@ -15,13 +15,13 @@ namespace System.Reflection.Metadata.Model
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private TypeDefinition myTypeDefinition;
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private ImmutableArray<MetadataMethod> myMethods;
+    private ImmutableArray<MetadataMethodDefinition> myMethods;
 
     public MetadataTypeDefinition([NotNull] MetadataReader metadataReader, TypeDefinition typeDefinition)
     {
       myMetadataReader = metadataReader;
       myTypeDefinition = typeDefinition;
-      myMethods = default(ImmutableArray<MetadataMethod>);
+      myMethods = default(ImmutableArray<MetadataMethodDefinition>);
     }
 
     public TypeDefinition Definition
@@ -159,20 +159,20 @@ namespace System.Reflection.Metadata.Model
       }
     }
 
-    public ImmutableArray<MetadataMethod> Methods
+    public ImmutableArray<MetadataMethodDefinition> Methods
     {
       get
       {
         if (myMethods.IsDefault)
         {
           var handleCollection = myTypeDefinition.GetMethods();
-          var builder = ImmutableArray.CreateBuilder<MetadataMethod>(handleCollection.Count);
+          var builder = ImmutableArray.CreateBuilder<MetadataMethodDefinition>(handleCollection.Count);
           var metadataReader = myMetadataReader;
 
           foreach (var definitionHandle in handleCollection)
           {
             var methodDefinition = metadataReader.GetMethodDefinition(definitionHandle);
-            builder.Add(new MetadataMethod(metadataReader, methodDefinition));
+            builder.Add(new MetadataMethodDefinition(metadataReader, methodDefinition));
           }
 
           myMethods = builder.MoveToImmutable();

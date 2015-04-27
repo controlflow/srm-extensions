@@ -55,6 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ILReader\ILBodyFromMethodBody.cs" />
     <Compile Include="ILReader\ILReaderTest.cs" />
     <Compile Include="MetadataModel\MetadataModelTest.cs" />
     <Compile Include="MetadataModel\MetadataModelTestBase.cs" />

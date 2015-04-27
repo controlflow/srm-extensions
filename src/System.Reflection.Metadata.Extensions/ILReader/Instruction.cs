@@ -105,7 +105,7 @@ namespace System.Reflection.Metadata.ILReader
       }
     }
 
-    // int[] GetSwitchTargets(ILStream context)
+    // todo: int[] GetSwitchTargets(ILStream context)
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int[] SwitchTargets
     {

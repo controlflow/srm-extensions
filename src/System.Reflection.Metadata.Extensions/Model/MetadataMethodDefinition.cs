@@ -4,8 +4,8 @@ using JetBrains.Annotations;
 
 namespace System.Reflection.Metadata.Model
 {
-  [DebuggerDisplay("{Name}")]
-  public struct MetadataMethod
+  [DebuggerDisplay("{ToString()}")]
+  public struct MetadataMethodDefinition
   {
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     [NotNull] private readonly MetadataReader myMetadataReader;
@@ -14,7 +14,7 @@ namespace System.Reflection.Metadata.Model
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private ImmutableArray<MetadataParameter> myParameters;
 
-    public MetadataMethod([NotNull] MetadataReader metadataReader, MethodDefinition methodDefinition)
+    public MetadataMethodDefinition([NotNull] MetadataReader metadataReader, MethodDefinition methodDefinition)
     {
       myMethodDefinition = methodDefinition;
       myMetadataReader = metadataReader;
@@ -29,6 +29,18 @@ namespace System.Reflection.Metadata.Model
     [NotNull] public string Name
     {
       get { return myMetadataReader.GetString(myMethodDefinition.Name); }
+    }
+
+    public MetadataTypeDefinition? ContainingType
+    {
+      get
+      {
+        var declaringType = myMethodDefinition.GetDeclaringType();
+        if (declaringType.IsNil) return null;
+
+        var typeDefinition = myMetadataReader.GetTypeDefinition(declaringType);
+        return new MetadataTypeDefinition(myMetadataReader, typeDefinition);
+      }
     }
 
     public ImmutableArray<MetadataParameter> Parameters
@@ -51,6 +63,13 @@ namespace System.Reflection.Metadata.Model
 
         return myParameters;
       }
+    }
+
+    public override string ToString()
+    {
+      if (!ContainingType.HasValue) return Name;
+
+      return ContainingType.Value.FullName + "." + Name;
     }
   }
 }

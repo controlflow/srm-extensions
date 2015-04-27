@@ -722,19 +722,19 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
       myDynamicModule = assemblyBuilder.DefineDynamicModule("Foo");
     }
 
-    private void AssertReader([NotNull] Action<ILGenerator> ilGenerator, [NotNull] Action<List<Instruction>> assertion)
+    private void AssertReader([NotNull] Action<ILGenerator> ilGenerator, [NotNull] Action<IList<Instruction>> assertion)
     {
       AssertReader<Action>(ilGenerator, assertion);
     }
 
-    private void AssertReader<TDelegate>([NotNull] Action<ILGenerator> ilGenerator, [NotNull] Action<List<Instruction>> assertion)
+    private void AssertReader<TDelegate>([NotNull] Action<ILGenerator> ilGenerator, [NotNull] Action<IList<Instruction>> assertion)
       where TDelegate : class
     {
       var delegateType = typeof(TDelegate);
       Debug.Assert(delegateType.IsSubclassOf(typeof(Delegate)), "delegateType.IsSubclassOf(typeof(Delegate))");
 
       var invokeMethod = delegateType.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Instance);
-      var parameterTypes = invokeMethod.GetParameters().Select( x=> x.ParameterType).ToArray();
+      var parameterTypes = invokeMethod.GetParameters().Select(x => x.ParameterType).ToArray();
 
       var dynamicName = string.Format("Method{0}", myLastMethodIndex++);
       var typeBuilder = myDynamicModule.DefineType(dynamicName);
@@ -750,18 +750,10 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
       var methodBody = methodInfo.GetMethodBody();
       Assert.IsNotNull(methodBody);
 
-      var ilStream = methodBody.GetILAsByteArray();
-      var ilLength = ilStream.Length;
+      var body = ILBodyFromMethodBody.TryCreate(methodBody);
+      Assert.IsNotNull(body);
 
-      fixed (byte* ptr = &ilStream[0])
-      {
-        var blobReader = new BlobReader(ptr, ilLength);
-
-        var count = ILReaderImpl.Count(blobReader);
-        var instructions = ILReaderImpl.ReadUnsafe(blobReader, count);
-
-        assertion(instructions.ToList());
-      }
+      assertion(body.Instructions);
     }
   }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using JetBrains.Annotations;
 
 namespace System.Reflection.Metadata.ILReader
 {
@@ -9,7 +8,7 @@ namespace System.Reflection.Metadata.ILReader
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void UnexpectedOpcode()
     {
-      throw new ArgumentException("Unexpected opcode");
+      throw new InvalidOperationException("Unexpected opcode");
     }
 
     private static int[] ReadSwitch(ref BlobReader reader)

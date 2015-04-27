@@ -21,7 +21,7 @@ class Program
     long ilBytes = 0, instructionsCount = 0;
     var stopwatch = Stopwatch.StartNew();
 
-    for (int i = 0; i < 10; i++)
+    //for (int i = 0; i < 10; i++)
     foreach (var dllFile in dllFiles)
     {
       using (var dllStream = new FileStream(dllFile, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -31,36 +31,11 @@ class Program
 
         foreach (var methodDefinition in metadataReader.GetMethodDefinitions())
         {
-          //var typeDefinition = metadataReader.GetTypeDefinition(methodDefinition.GetDeclaringType());
+          var ilBody = MetadataILBody.TryCreate(peReader, methodDefinition.Definition);
+          if (ilBody == null) continue;
 
-          //var methodName = metadataReader.GetString(methodDefinition.Name);
-          //var typeName = metadataReader.GetString(typeDefinition.Name);
-          //var namespaceName = metadataReader.GetString(typeDefinition.Namespace);
-
-          var virtualAddress = methodDefinition.Definition.RelativeVirtualAddress;
-          if (virtualAddress == 0) continue;
-
-          var methodBodyBlock = peReader.GetMethodBody(virtualAddress);
-
-          var ilReader = methodBodyBlock.GetILReader();
-          
-          ilBytes = Math.Max(ilBytes, ilReader.RemainingBytes);
-
-          var count = ILReaderImpl.Count(ilReader);
-          try
-          {
-            var instructions = ILReaderImpl.ReadUnsafe(ilReader, count);
-            GC.KeepAlive(instructions);
-          }
-          catch
-          {
-            throw;
-          }
-
-          instructionsCount += count;
-
-          //Console.WriteLine("{0}.{1}.{2}: {3}/{4}",
-          //  namespaceName, typeName, methodName, methodBodyBlock.GetILBytes().Length, instructions.Count);
+          ilBytes = Math.Max(ilBytes, ilBody.BodySize);
+          instructionsCount += ilBody.Instructions.Length;
         }
       }
     }

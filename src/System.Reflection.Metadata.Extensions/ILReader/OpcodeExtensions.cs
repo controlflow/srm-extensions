@@ -60,6 +60,7 @@
         case Opcode.Cpobj:
           return true;
 
+        // todo: to be reviewed
         case Opcode.Initblk:
         case Opcode.Initobj:
         case Opcode.Isinst:
