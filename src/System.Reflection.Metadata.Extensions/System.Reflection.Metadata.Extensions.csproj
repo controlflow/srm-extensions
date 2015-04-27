@@ -33,10 +33,12 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Annotations\HasThrowAnnotation.cs" />
     <Compile Include="ILReader\ILReader2.cs" />
+    <Compile Include="ILReader\ILReaderImpl1.cs" />
     <Compile Include="Model\MetadataAssemblyReference.cs" />
     <Compile Include="Model\MetadataMethod.cs" />
     <Compile Include="Model\MetadataParameter.cs" />

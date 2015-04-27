@@ -13,6 +13,7 @@ class IlReaderBuilder
   private readonly StringBuilder myCountMethod = new StringBuilder();
   //private readonly HashSet<string> myCases = new HashSet<string>(StringComparer.Ordinal);
   private readonly List<OpCode> myAllOpcodes;
+  private static readonly bool UnsafeVersion = true;
 
   public IlReaderBuilder()
   {
@@ -41,7 +42,7 @@ class IlReaderBuilder
       readMethod.AppendLine(" continue;");
     }
 
-    readMethod.AppendFormat("case {0}:", MultiByteOpCodePrefix).AppendLine();
+    readMethod.AppendFormat("case 0x{0:X2}:", MultiByteOpCodePrefix).AppendLine();
     readMethod.AppendLine("  switch (reader.ReadByte()) {");
 
     // two-byte instructions
@@ -57,14 +58,22 @@ class IlReaderBuilder
       readMethod.AppendLine("  continue;");
     }
 
-    // todo: remove?
+    // note: already checked in counting pass
+    //readMethod.AppendLine("  default:");
+    //readMethod.AppendLine("    UnexpectedOpcode();");
+    //readMethod.AppendLine("    continue;");
+    //readMethod.AppendLine("  }");
+    //
+    //readMethod.AppendLine("default:");
+    //readMethod.AppendLine("  UnexpectedOpcode();");
+    //readMethod.AppendLine("  continue;");
+    //readMethod.AppendLine("}");
+
     readMethod.AppendLine("  default:");
-    readMethod.AppendLine("    UnexpectedOpcode();");
     readMethod.AppendLine("    continue;");
     readMethod.AppendLine("  }");
-
+    
     readMethod.AppendLine("default:");
-    readMethod.AppendLine("  UnexpectedOpcode();");
     readMethod.AppendLine("  continue;");
     readMethod.AppendLine("}");
 
@@ -87,7 +96,7 @@ class IlReaderBuilder
 
     CountOpcodes(myAllOpcodes.Where(code => !IsTwoByteOpcode(code)));
 
-    countMethod.AppendFormat("case {0}:", MultiByteOpCodePrefix).AppendLine();
+    countMethod.AppendFormat("case 0x{0:X2}:", MultiByteOpCodePrefix).AppendLine();
 
     {
       countMethod.AppendLine("  switch (reader.ReadByte()) {");
@@ -195,16 +204,25 @@ class IlReaderBuilder
     var name = code.Name;
     var value = GetValue(code, ref name);
 
-    builder.AppendFormat("  instructions.Add(new Instruction(offset");
-
     var caseName = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(name).Replace(".", "");
-    builder.AppendFormat(", Opcode.{0}", caseName);
-
     //myCases.Add(caseName);
+
+    if (UnsafeVersion)
+    {
+      builder.AppendFormat("  instructions[index].myCode = Opcode.{0};", caseName).AppendLine();
+    }
+    else
+    {
+      builder.AppendFormat("  instructions.Add(new Instruction(offset");
+      builder.AppendFormat(", Opcode.{0}", caseName);
+    }
 
     if (value != null)
     {
-      builder.Append(", ").Append(value.Value);
+      if (UnsafeVersion)
+        builder.AppendFormat("  instructions[index].myIntOperand = {0};", value.Value).AppendLine();
+      else
+        builder.Append(", ").Append(value.Value);
 
       Debug.Assert(code.OperandType == OperandType.InlineNone);
     }
@@ -221,52 +239,79 @@ class IlReaderBuilder
         case OperandType.InlineType:
         case OperandType.ShortInlineR:
         {
-          builder.Append(", reader.ReadInt32()");
+          if (UnsafeVersion)
+            builder.AppendLine("  instructions[index].myIntOperand = reader.ReadInt32();");
+          else
+            builder.Append(", reader.ReadInt32()");
+
           break;
         }
 
         case OperandType.InlineBrTarget:
         {
-          builder.Append(", reader.ReadInt32() + reader.Offset");
+          if (UnsafeVersion)
+            builder.AppendLine("  instructions[index].myIntOperand = reader.ReadInt32() + reader.Offset;");
+          else
+            builder.Append(", reader.ReadInt32() + reader.Offset");
+
           break;
         }
 
         case OperandType.InlineSwitch:
         {
-          builder.Append(", ReadSwitch(ref reader)");
+          if (UnsafeVersion)
+            builder.AppendLine("  instructions[index].myOperand = ReadSwitch(ref reader);");
+          else
+            builder.Append(", ReadSwitch(ref reader)");
+
           break;
         }
 
         case OperandType.InlineI8:
         case OperandType.InlineR:
         {
-          builder.Append(", reader.ReadInt64()");
+          if (UnsafeVersion)
+            builder.AppendLine("  instructions[index].myOperand = reader.ReadInt64();");
+          else
+            builder.Append(", reader.ReadInt64()");
+
           break;
         }
 
         case OperandType.InlineVar:
         {
-          builder.Append(", reader.ReadInt16()");
+          if (UnsafeVersion)
+            builder.AppendLine("  instructions[index].myIntOperand = reader.ReadInt16();");
+          else
+            builder.Append(", reader.ReadInt16()");
+
           break;
         }
 
         case OperandType.ShortInlineVar:
         case OperandType.ShortInlineI:
         {
-          builder.Append(", reader.ReadByte()");
+          if (UnsafeVersion)
+            builder.AppendLine("  instructions[index].myIntOperand = reader.ReadByte();");
+          else
+            builder.Append(", reader.ReadByte()");
+
           break;
         }
 
         case OperandType.ShortInlineBrTarget:
         {
-          builder.Append(", reader.ReadSByte() + reader.Offset");
+          if (UnsafeVersion)
+            builder.AppendLine("  instructions[index].myIntOperand = reader.ReadSByte() + reader.Offset;");
+          else
+            builder.Append(", reader.ReadSByte() + reader.Offset");
+
           break;
         }
       }
     }
 
-    builder.Append("));");
-    builder.AppendLine();
+    if (!UnsafeVersion) builder.Append("));").AppendLine();
   }
 
   private static int? GetValue(OpCode code, ref string name)

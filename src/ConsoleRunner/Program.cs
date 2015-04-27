@@ -13,8 +13,8 @@ class Program
   static void Main()
   {
     var builder = new IlReaderBuilder();
-    //var text = builder.BuildReadMethod();
-    var text = builder.BuildCountMethod();
+    var text = builder.BuildReadMethod();
+    //var text = builder.BuildCountMethod();
 
     var dllFiles = Directory.GetFiles(@"C:\Work\ReSharper\bin", "*.dll");
 
@@ -24,6 +24,7 @@ class Program
     long ilBytes = 0, instructionsCount = 0;
     var stopwatch = Stopwatch.StartNew();
 
+    for (int i = 0; i < 10; i++)
     foreach (var dllFile in dllFiles)
     {
       using (var dllStream = new FileStream(dllFile, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -50,22 +51,25 @@ class Program
 
           var count = ILReaderImpl.Count(ilReader);
           
-          var instructions = new List<Instruction>(count);
+          //var instructions = new List<Instruction>(count);
           try
           {
-            ILReaderImpl.Read(ilReader, instructions);
+            //ILReaderImpl.Read(ilReader, instructions);
+
+            var xs = ILReaderImpl.ReadUnsafe(ilReader, count);
+            GC.KeepAlive(xs);
           }
           catch
           {
-            foreach (var instruction in instructions)
-            {
-              Console.WriteLine(instruction);
-            }
+            //foreach (var instruction in instructions)
+            //{
+            //  Console.WriteLine(instruction);
+            //}
           
             throw;
           }
 
-          instructionsCount += instructions.Count;
+          instructionsCount += count;
 
           //Console.WriteLine("{0}.{1}.{2}: {3}/{4}",
           //  namespaceName, typeName, methodName, methodBodyBlock.GetILBytes().Length, instructions.Count);

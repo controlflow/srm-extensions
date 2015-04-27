@@ -3,24 +3,33 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection.Metadata.Model;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable FieldCanBeMadeReadOnly.Global
 
 namespace System.Reflection.Metadata.ILReader
 {
   [StructLayout(LayoutKind.Auto)]
   [SuppressMessage("ReSharper", "NotResolvedInText")]
-  public struct Instruction
+  public unsafe struct Instruction
   {
-    private readonly int myOffset;
-    private readonly Opcode myCode;
-    private readonly int myIntOperand;
-    private readonly object myOperand;
+    //internal readonly int myOffset;
+    internal Opcode myCode;
+    internal int myIntOperand;
+    //internal object myOperand;
+
+    public Instruction(Opcode code)
+    {
+      myCode = code;
+      myIntOperand = 0;
+      //myOperand = null;
+    }
 
     public Instruction(int offset, Opcode code)
     {
-      myOffset = offset;
+      //myOffset = offset;
       myCode = code;
       myIntOperand = 0;
-      myOperand = null;
+      //myOperand = null;
     }
 
     public Instruction(int offset, Opcode code, int operand) : this(offset, code)
@@ -30,18 +39,19 @@ namespace System.Reflection.Metadata.ILReader
 
     public Instruction(int offset, Opcode code, long operand) : this(offset, code)
     {
-      myOperand = operand;
+      //myOperand = operand;
     }
 
     public Instruction(int offset, Opcode code, [NotNull] int[] switchLabels) : this(offset, code)
     {
-      myOperand = switchLabels;
+      //myOperand = switchLabels;
     }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int Offset
     {
-      get { return myOffset; }
+      //get { return myOffset; }
+      get { return 0; }
     }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -132,7 +142,8 @@ namespace System.Reflection.Metadata.ILReader
       get
       {
         AssertSwitchTargets();
-        return (int[]) myOperand;
+        //return (int[]) myOperand;
+        return null;
       }
     }
 
@@ -288,7 +299,9 @@ namespace System.Reflection.Metadata.ILReader
     public override string ToString()
     {
       var opcode = myCode.ToString().ToLowerInvariant();
-      return string.Format("IL{0:X4}: {1} {2}", myOffset, opcode, myOperand ?? myIntOperand);
+      return string.Format("IL{0:X4}: {1} {2}", Offset, opcode, 
+        //myOperand ?? 
+        myIntOperand);
     }
   }
 }
