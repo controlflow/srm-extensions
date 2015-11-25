@@ -33,6 +33,14 @@ class Program
 
         foreach (var methodDefinition in metadataReader.GetMethodDefinitions())
         {
+          var containingType = methodDefinition.ContainingType;
+          if (containingType.HasValue)
+          {
+            var fullName = containingType.Value.FullName;
+            var methodName = methodDefinition.Name;
+            GC.KeepAlive(fullName + methodName);
+          }
+
           var ilBody = MetadataILBody.TryCreate(peReader, methodDefinition.Definition);
           if (ilBody == null) continue;
 

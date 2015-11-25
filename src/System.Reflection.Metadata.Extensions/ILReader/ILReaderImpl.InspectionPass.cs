@@ -247,8 +247,8 @@ namespace System.Reflection.Metadata.ILReader
 
           case 0x45: // switch
           {
-            var casesCount = reader.ReadUInt32();
-            jumps = jumps ?? new List<InstructionJump>(capacity: Math.Max((int) casesCount, 4));
+            var casesCount = reader.ReadInt32();
+            jumps = jumps ?? new List<InstructionJump>(capacity: Math.Max(casesCount, 4));
 
             for (; casesCount > 0; casesCount--)
             {

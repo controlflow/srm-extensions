@@ -14,7 +14,7 @@ namespace System.Reflection.Metadata.ILReader
       fixed (Instruction* instructions = array)
       for (var index = 0; index < count; index++)
       {
-        while (reader.Offset == nextJump.Target)
+        while (reader.Offset == nextJump.Target) // decode jumps
         {
           instructions[nextJump.Source].myOperand = index;
 
@@ -156,6 +156,7 @@ namespace System.Reflection.Metadata.ILReader
           case 0x21: // ldc.i8
             instructions[index].myCode = Opcode.LdcI8;
             //instructions[index].myOperand = reader.ReadInt64();
+            reader.ReadInt64();
             continue;
           case 0x22: // ldc.r4
             instructions[index].myCode = Opcode.LdcR4;
@@ -165,6 +166,7 @@ namespace System.Reflection.Metadata.ILReader
             instructions[index].myCode = Opcode.LdcR8;
             // todo: bring back?
             // instructions[index].myOperand = reader.ReadInt64();
+            reader.ReadInt64();
             continue;
           case 0x25: // dup
             instructions[index].myCode = Opcode.Dup;
@@ -293,7 +295,7 @@ namespace System.Reflection.Metadata.ILReader
             continue;
           case 0x45: // switch
             instructions[index].myCode = Opcode.Switch;
-            var casesCount = reader.ReadUInt32();
+            var casesCount = reader.ReadInt32();
             for (; casesCount > 0; casesCount--) reader.ReadInt32();
             continue;
           case 0x46: // ldind.i1
