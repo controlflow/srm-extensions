@@ -1,28 +1,67 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using JetBrains.Annotations;
 
 namespace System.Reflection.Metadata.ILReader
 {
   public static partial class ILReaderImpl
   {
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void UnexpectedOpcode()
+    private static void UnexpectedOpcode(int offset)
     {
-      throw new InvalidOperationException("Unexpected opcode");
+      throw new InvalidOperationException($"Unexpected opcode at offset: 0x{offset:X}");
     }
 
-    private static int[] ReadSwitch(ref BlobReader reader)
+    [StructLayout(LayoutKind.Auto)]
+    internal struct FirstPassInfo
     {
-      var casesCount = reader.ReadInt32();
-      var switchBranches = new int[casesCount];
-      var endOffset = reader.Offset + casesCount * 4;
+      public int InstructionsCount;
+      [CanBeNull] public List<InstructionJump> SortedJumps;
 
-      for (var index = 0; index < switchBranches.Length; index++)
+      [NotNull] private static readonly List<InstructionJump> UnreachableJump = new List<InstructionJump> { InstructionJump.Unreachable };
+
+      [NotNull] public List<InstructionJump> GetJumpsOrUnreachable()
       {
-        switchBranches[index] = reader.ReadInt32() + endOffset;
+        return SortedJumps ?? UnreachableJump;
+      }
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    [DebuggerDisplay("{Target} <- {Source}")]
+    internal struct InstructionJump : IComparable<InstructionJump>
+    {
+      public readonly int Target; // offset or index
+      public readonly int Source;
+
+      public InstructionJump(int target, int source)
+      {
+        Target = target;
+        Source = source;
       }
 
-      return switchBranches;
+      public int CompareTo(InstructionJump other)
+      {
+        // ReSharper disable once ImpureMethodCallOnReadonlyValueField
+        return Target.CompareTo(other.Target);
+      }
+
+      public static InstructionJump Unreachable = new InstructionJump(-1, -1);
+    }
+
+    [CanBeNull]
+    public static Instruction[] TryRead(BlobReader reader)
+    {
+      try
+      {
+        var info = InspectionPass(reader);
+        return DecodingPass(reader, info);
+      }
+      catch (InvalidOperationException)
+      {
+        return null;
+      }
     }
   }
 }

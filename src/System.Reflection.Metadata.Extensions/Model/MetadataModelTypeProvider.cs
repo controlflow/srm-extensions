@@ -7,13 +7,11 @@ namespace System.Reflection.Metadata.ILReader
 {
   public class MetadataModelTypeProvider : ISignatureTypeProvider<MetadataTypeSpecification>
   {
-    [NotNull] private readonly MetadataReader myReader;
-
-    [NotNull] public MetadataReader Reader { get { return myReader; } }
+    [NotNull] public MetadataReader Reader { get; }
 
     public MetadataModelTypeProvider([NotNull] MetadataReader reader)
     {
-      myReader = reader;
+      Reader = reader;
     }
 
     public MetadataTypeSpecification GetGenericInstance(

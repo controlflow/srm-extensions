@@ -11,22 +11,24 @@ class Program
 {
   static void Main()
   {
-    var builder = new IlReaderBuilder();
-    var text = builder.BuildReadMethod();
+    //var builder = new IlReaderBuilder();
+    //var text = builder.BuildReadMethod();
     //var text = builder.BuildCountMethod();
 
-    var dllFiles = Directory.GetFiles(@"C:\Work\ReSharper\bin", "*.dll");
+    var dllFiles = Directory.GetFiles(@"C:\Work\ReSharper\bin.resharper", "*.dll");
     //var dllFiles = new[] {typeof (object).Assembly.Location};
 
     long ilBytes = 0, instructionsCount = 0;
     var stopwatch = Stopwatch.StartNew();
 
-    //for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 10; i++)
     foreach (var dllFile in dllFiles)
     {
       using (var dllStream = new FileStream(dllFile, FileMode.Open, FileAccess.Read, FileShare.Read))
       using (var peReader = new PEReader(dllStream, PEStreamOptions.PrefetchEntireImage))
       {
+        if (!peReader.HasMetadata) continue;
+
         var metadataReader = peReader.GetMetadataReader();
 
         foreach (var methodDefinition in metadataReader.GetMethodDefinitions())

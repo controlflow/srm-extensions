@@ -21,15 +21,9 @@ namespace System.Reflection.Metadata.Model
       myParameters = default(ImmutableArray<MetadataParameter>);
     }
 
-    public MethodDefinition Definition
-    {
-      get { return myMethodDefinition; }
-    }
+    public MethodDefinition Definition => myMethodDefinition;
 
-    [NotNull] public string Name
-    {
-      get { return myMetadataReader.GetString(myMethodDefinition.Name); }
-    }
+    [NotNull] public string Name => myMetadataReader.GetString(myMethodDefinition.Name);
 
     public MetadataTypeDefinition? ContainingType
     {

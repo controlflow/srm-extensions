@@ -19,10 +19,7 @@ namespace System.Reflection.Metadata.Model
       myAssemblyReference = assemblyReference;
     }
 
-    [NotNull] public string Name
-    {
-      get { return myMetadataReader.GetString(myAssemblyReference.Name); }
-    }
+    [NotNull] public string Name => myMetadataReader.GetString(myAssemblyReference.Name);
 
     [NotNull] public string FullName
     {
@@ -54,10 +51,7 @@ namespace System.Reflection.Metadata.Model
       }
     }
 
-    [NotNull] public Version Version
-    {
-      get { return myAssemblyReference.Version; }
-    }
+    [NotNull] public Version Version => myAssemblyReference.Version;
 
     public bool Equals(MetadataAssemblyReference other)
     {

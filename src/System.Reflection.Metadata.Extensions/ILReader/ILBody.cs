@@ -4,23 +4,15 @@ namespace System.Reflection.Metadata.ILReader
 {
   public abstract class ILBody
   {
-    [NotNull] private readonly Instruction[] myInstructions;
-    private readonly int myMethodBodySize;
-
     protected ILBody([NotNull] Instruction[] instructions, int methodBodySize)
     {
-      myInstructions = instructions;
-      myMethodBodySize = methodBodySize;
+      Instructions = instructions;
+      BodySize = methodBodySize;
     }
 
-    [NotNull] public Instruction[] Instructions
-    {
-      get { return myInstructions; }
-    }
+    [NotNull] public Instruction[] Instructions { get; }
+    public int BodySize { get; }
 
-    public int BodySize
-    {
-      get { return myMethodBodySize; }
-    }
+    //internal abstract T ReadFromBody<T>(Func<BlobReader, T> reader);
   }
 }

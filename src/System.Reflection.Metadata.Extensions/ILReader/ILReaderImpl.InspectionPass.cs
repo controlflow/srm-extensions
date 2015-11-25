@@ -1,43 +1,16 @@
 ﻿using System.Collections.Generic;
-using System.Runtime.InteropServices;
 
 namespace System.Reflection.Metadata.ILReader
 {
-  // todo: hide to internal
-  public struct BodyInspectionInfo
-  {
-    public int InstructionsCount;
-    public int Int64OperandsCount; // allocate array of corresponding size? or just store offsets?
-    public int SwitchJumpListsCount;
-    public List<MsilJump> SortedJumps; // todo: fill, can't be empty!
-  }
-
-  // todo: hide to internal
-  [StructLayout(LayoutKind.Auto)]
-  public struct MsilJump
-  {
-    public readonly int TargetOffset;
-    public readonly int SourceIndex;
-
-    public MsilJump(int targetOffset, int sourceIndex)
-    {
-      TargetOffset = targetOffset;
-      SourceIndex = sourceIndex;
-    }
-  }
-
-  // if (jump.TargetOffset == offset) { instructions[jump.SourceIndex].myIntOperand = index; jump = nextJump; }
-
   public partial class ILReaderImpl
   {
-    public static void Pass1(BlobReader reader, ref BodyInspectionInfo info)
+    internal static FirstPassInfo InspectionPass(BlobReader reader)
     {
       var count = 0;
+      List<InstructionJump> jumps = null;
 
-      while (reader.RemainingBytes > 0)
+      for (; reader.RemainingBytes > 0; count++)
       {
-        count ++;
-
         switch (reader.ReadByte())
         {
           case 0x00: // nop
@@ -171,7 +144,10 @@ namespace System.Reflection.Metadata.ILReader
           case 0xFC: // prefix3
           case 0xFD: // prefix2
           case 0xFF: // prefixref
+          {
             continue;
+          }
+
           case 0x0E: // ldarg.s
           case 0x0F: // ldarga.s
           case 0x10: // starg.s
@@ -179,16 +155,11 @@ namespace System.Reflection.Metadata.ILReader
           case 0x12: // ldloca.s
           case 0x13: // stloc.s
           case 0x1F: // ldc.i4.s
+          {
             reader.ReadByte();
             continue;
-          case 0x20: // ldc.i4
-          case 0x22: // ldc.r4
-          case 0x27: // jmp
-          case 0x28: // call
-          case 0x29: // calli
-          case 0x38: // br
-          case 0x39: // brfalse
-          case 0x3A: // brtrue
+          }
+
           case 0x3B: // beq
           case 0x3C: // bge
           case 0x3D: // bgt
@@ -199,6 +170,23 @@ namespace System.Reflection.Metadata.ILReader
           case 0x42: // bgt.un
           case 0x43: // ble.un
           case 0x44: // blt.un
+          case 0x38: // br
+          case 0x39: // brfalse
+          case 0x3A: // brtrue
+          case 0xDD: // leave
+          {
+            var targetOffset = reader.ReadInt32() + reader.Offset;
+
+            jumps = jumps ?? new List<InstructionJump>(capacity: 4);
+            jumps.Add(new InstructionJump(targetOffset, count));
+            continue;
+          }
+
+          case 0x20: // ldc.i4
+          case 0x22: // ldc.r4
+          case 0x27: // jmp
+          case 0x28: // call
+          case 0x29: // calli
           case 0x6F: // callvirt
           case 0x70: // cpobj
           case 0x71: // ldobj
@@ -223,13 +211,18 @@ namespace System.Reflection.Metadata.ILReader
           case 0xC2: // refanyval
           case 0xC6: // mkrefany
           case 0xD0: // ldtoken
-          case 0xDD: // leave
+          {
             reader.ReadInt32();
             continue;
+          }
+
           case 0x21: // ldc.i8
           case 0x23: // ldc.r8
+          {
             reader.ReadInt64();
             continue;
+          }
+
           case 0x2B: // br.s
           case 0x2C: // brfalse.s
           case 0x2D: // brtrue.s
@@ -244,11 +237,28 @@ namespace System.Reflection.Metadata.ILReader
           case 0x36: // ble.un.s
           case 0x37: // blt.un.s
           case 0xDE: // leave.s
-            reader.ReadSByte();
+          {
+            var targetOffset = reader.ReadSByte() + reader.Offset;
+
+            jumps = jumps ?? new List<InstructionJump>(capacity: 4);
+            jumps.Add(new InstructionJump(targetOffset, count));
             continue;
+          }
+
           case 0x45: // switch
-            for (var cases = reader.ReadUInt32(); cases > 0; cases--) reader.ReadInt32();
+          {
+            var casesCount = reader.ReadUInt32();
+            jumps = jumps ?? new List<InstructionJump>(capacity: Math.Max((int) casesCount, 4));
+
+            for (; casesCount > 0; casesCount--)
+            {
+              var targetOffset = reader.ReadInt32() + reader.Offset;
+              jumps.Add(new InstructionJump(targetOffset, count));
+            }
+
             continue;
+          }
+
           case 254:
             switch (reader.ReadByte())
             {
@@ -287,17 +297,25 @@ namespace System.Reflection.Metadata.ILReader
                 reader.ReadByte();
                 continue;
               default:
-                UnexpectedOpcode();
+                UnexpectedOpcode(reader.Offset - 1);
                 continue;
             }
+
           default:
-            UnexpectedOpcode();
+          {
+            UnexpectedOpcode(reader.Offset - 1);
             continue;
+          }
         }
       }
 
-      info.InstructionsCount = count;
+      jumps?.Sort();
 
+      var info = new FirstPassInfo();
+      info.InstructionsCount = count;
+      info.SortedJumps = jumps;
+
+      return info;
     }
   }
 }

@@ -24,15 +24,9 @@ namespace System.Reflection.Metadata.Model
       myMethods = default(ImmutableArray<MetadataMethodDefinition>);
     }
 
-    public TypeDefinition Definition
-    {
-      get { return myTypeDefinition; }
-    }
+    public TypeDefinition Definition => myTypeDefinition;
 
-    [NotNull] public string Name
-    {
-      get { return myMetadataReader.GetString(myTypeDefinition.Name); }
-    }
+    [NotNull] public string Name => myMetadataReader.GetString(myTypeDefinition.Name);
 
     [NotNull] public string FullName
     {
@@ -110,30 +104,15 @@ namespace System.Reflection.Metadata.Model
       }
     }
 
-    public bool IsClass
-    {
-      get { return !IsInterface; }
-    }
+    public bool IsClass => !IsInterface;
 
-    public bool IsInterface
-    {
-      get { return (myTypeDefinition.Attributes & TypeAttributes.Interface) != 0; }
-    }
+    public bool IsInterface => (myTypeDefinition.Attributes & TypeAttributes.Interface) != 0;
 
-    public bool IsAbstract
-    {
-      get { return (myTypeDefinition.Attributes & TypeAttributes.Abstract) != 0; }
-    }
+    public bool IsAbstract => (myTypeDefinition.Attributes & TypeAttributes.Abstract) != 0;
 
-    public bool IsSealed
-    {
-      get { return (myTypeDefinition.Attributes & TypeAttributes.Sealed) != 0; }
-    }
+    public bool IsSealed => (myTypeDefinition.Attributes & TypeAttributes.Sealed) != 0;
 
-    public bool IsNested
-    {
-      get { return !myTypeDefinition.GetDeclaringType().IsNil; }
-    }
+    public bool IsNested => !myTypeDefinition.GetDeclaringType().IsNil;
 
     public MetadataVisibility Visibility
     {
@@ -238,10 +217,7 @@ namespace System.Reflection.Metadata.Model
     // TODO: GetBaseTypeReference
 
     [NotNull, DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private string DebugView
-    {
-      get { return "[typedef] " + FullName; }
-    }
+    private string DebugView => "[typedef] " + FullName;
 
     public override string ToString()
     {

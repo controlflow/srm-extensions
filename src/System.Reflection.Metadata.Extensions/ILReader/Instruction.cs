@@ -1,10 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection.Metadata.Model;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using JetBrains.Annotations;
-// ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable FieldCanBeMadeReadOnly.Global
 
 namespace System.Reflection.Metadata.ILReader
 {
@@ -12,35 +10,24 @@ namespace System.Reflection.Metadata.ILReader
   [SuppressMessage("ReSharper", "NotResolvedInText")]
   public struct Instruction
   {
-    internal Opcode myCode; // todo: rename to Code
-    internal int myIntOperand; // todo: rename to Operand
-
-    // todo: remove!
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public int Offset
-    {
-      //get { return myOffset; }
-      get { return 0; }
-    }
+    internal Opcode myCode;
+    internal int myOperand;
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public Opcode Code
-    {
-      get { return myCode; }
-    }
+    public Opcode Code => myCode;
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public int ValueInt32
+    public int Int32Value
     {
       get
       {
-        AssertInt32();
-        return myIntOperand;
+        AssertInt32Value();
+        return myOperand;
       }
     }
 
-    [Conditional("DEBUG")]
-    private void AssertInt32()
+    [Conditional("DEBUG"), MethodImpl(MethodImplOptions.NoInlining)]
+    private void AssertInt32Value()
     {
       if (myCode != Opcode.LdcI4)
         throw new ArgumentOutOfRangeException("myCode", myCode, "Unexpected opcode type");
@@ -52,11 +39,11 @@ namespace System.Reflection.Metadata.ILReader
       get
       {
         AssertArgumentIndex();
-        return myIntOperand;
+        return myOperand;
       }
     }
 
-    [Conditional("DEBUG")]
+    [Conditional("DEBUG"), MethodImpl(MethodImplOptions.NoInlining)]
     private void AssertArgumentIndex()
     {
       switch (myCode)
@@ -76,11 +63,11 @@ namespace System.Reflection.Metadata.ILReader
       get
       {
         AssertBranchTarget();
-        return myIntOperand;
+        return myOperand;
       }
     }
 
-    [Conditional("DEBUG")]
+    [Conditional("DEBUG"), MethodImpl(MethodImplOptions.NoInlining)]
     private void AssertBranchTarget()
     {
       switch (myCode)
@@ -106,10 +93,12 @@ namespace System.Reflection.Metadata.ILReader
     }
 
     // todo: int[] GetSwitchTargets(ILStream context)
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public int[] SwitchTargets
+    //[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public int[] GetSwitchTargets(ILBody body)
     {
-      get
+      // todo: get from info
+      //body.BodySize
+
       {
         AssertSwitchTargets();
         //return (int[]) myOperand;
@@ -117,7 +106,7 @@ namespace System.Reflection.Metadata.ILReader
       }
     }
 
-    [Conditional("DEBUG")]
+    [Conditional("DEBUG"), MethodImpl(MethodImplOptions.NoInlining)]
     private void AssertSwitchTargets()
     {
       switch (myCode)
@@ -135,7 +124,7 @@ namespace System.Reflection.Metadata.ILReader
       get
       {
         AssertTypeHandle();
-        return RawHandle.From((uint) myIntOperand);
+        return RawHandle.From((uint) myOperand);
       }
     }
 
@@ -145,11 +134,11 @@ namespace System.Reflection.Metadata.ILReader
       get
       {
         AssertTypeHandle();
-        return myIntOperand;
+        return myOperand;
       }
     }
 
-    [Conditional("DEBUG")]
+    [Conditional("DEBUG"), MethodImpl(MethodImplOptions.NoInlining)]
     private void AssertTypeHandle()
     {
       switch (myCode)
@@ -173,7 +162,7 @@ namespace System.Reflection.Metadata.ILReader
       get
       {
         AssertMethodHandle();
-        return RawHandle.From((uint) myIntOperand);
+        return RawHandle.From((uint) myOperand);
       }
     }
 
@@ -183,11 +172,11 @@ namespace System.Reflection.Metadata.ILReader
       get
       {
         AssertMethodHandle();
-        return myIntOperand;
+        return myOperand;
       }
     }
 
-    [Conditional("DEBUG")]
+    [Conditional("DEBUG"), MethodImpl(MethodImplOptions.NoInlining)]
     private void AssertMethodHandle()
     {
       switch (myCode)
@@ -207,7 +196,7 @@ namespace System.Reflection.Metadata.ILReader
       get
       {
         AssertSignatureHandle();
-        return RawHandle.From((uint) myIntOperand);
+        return RawHandle.From((uint) myOperand);
       }
     }
 
@@ -217,11 +206,11 @@ namespace System.Reflection.Metadata.ILReader
       get
       {
         AssertSignatureHandle();
-        return myIntOperand;
+        return myOperand;
       }
     }
 
-    [Conditional("DEBUG")]
+    [Conditional("DEBUG"), MethodImpl(MethodImplOptions.NoInlining)]
     private void AssertSignatureHandle()
     {
       switch (myCode)
@@ -240,11 +229,11 @@ namespace System.Reflection.Metadata.ILReader
       get
       {
         AssertOperandType();
-        return (ILType) myIntOperand;
+        return (ILType) myOperand;
       }
     }
 
-    [Conditional("DEBUG")]
+    [Conditional("DEBUG"), MethodImpl(MethodImplOptions.NoInlining)]
     private void AssertOperandType()
     {
       switch (myCode)
@@ -264,14 +253,10 @@ namespace System.Reflection.Metadata.ILReader
       }
     }
 
-    // todo: typed operands accessors
-
     public override string ToString()
     {
       var opcode = myCode.ToString().ToLowerInvariant();
-      return string.Format("IL{0:X4}: {1} {2}", Offset, opcode, 
-        //myOperand ?? 
-        myIntOperand);
+      return $"{opcode} {myOperand}";
     }
   }
 }

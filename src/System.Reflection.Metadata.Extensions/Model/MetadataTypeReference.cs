@@ -18,15 +18,9 @@ namespace System.Reflection.Metadata.Model
       myTypeReference = typeReference;
     }
 
-    public TypeReference Reference
-    {
-      get { return myTypeReference; }
-    }
+    public TypeReference Reference => myTypeReference;
 
-    [NotNull] public string Name
-    {
-      get { return myMetadataReader.GetString(myTypeReference.Name); }
-    }
+    [NotNull] public string Name => myMetadataReader.GetString(myTypeReference.Name);
 
     [NotNull] public string FullName
     {
@@ -156,10 +150,7 @@ namespace System.Reflection.Metadata.Model
     }
 
     [NotNull, DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private string DebugView
-    {
-      get { return "[typeref] " + FullName; }
-    }
+    private string DebugView => "[typeref] " + FullName;
 
     public override string ToString()
     {
