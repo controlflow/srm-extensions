@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
@@ -28,35 +27,15 @@ namespace System.Reflection.Metadata.ILReader
       }
     }
 
-    [StructLayout(LayoutKind.Auto)]
-    [DebuggerDisplay("{Target} <- {Source}")]
-    internal struct InstructionJump : IComparable<InstructionJump>
-    {
-      public readonly int Target; // offset or index
-      public readonly int Source;
-
-      public InstructionJump(int target, int source)
-      {
-        Target = target;
-        Source = source;
-      }
-
-      public int CompareTo(InstructionJump other)
-      {
-        // ReSharper disable once ImpureMethodCallOnReadonlyValueField
-        return Target.CompareTo(other.Target);
-      }
-
-      public static InstructionJump Unreachable = new InstructionJump(-1, -1);
-    }
-
     [CanBeNull]
-    public static Instruction[] TryRead(BlobReader reader)
+    public static ILBody TryRead(BlobReader reader, [NotNull] IILBodyReaderAllocator allocator)
     {
       try
       {
-        var info = InspectionPass(reader);
-        return DecodingPass(reader, info);
+        var info = InspectionPass(reader, allocator);
+        var instructions = DecodingPass(reader, info, allocator);
+
+        return new ILBody(instructions, info.SortedJumps, reader.Length);
       }
       catch (InvalidOperationException)
       {

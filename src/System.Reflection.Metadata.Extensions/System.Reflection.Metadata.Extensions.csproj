@@ -76,9 +76,11 @@
     <Compile Include="Decoding\TypeNameParsing\TypeNameParserOfT.cs" />
     <Compile Include="Decoding\TypeNameParsing\TypeNameParserOfT.ParseMode.cs" />
     <Compile Include="Decoding\TypeNameParsing\TypeNameParserOfT.TypeBuilder.cs" />
+    <Compile Include="ILReader\IILBodyReaderAllocator.cs" />
     <Compile Include="ILReader\ILBody.cs" />
     <Compile Include="ILReader\ILReaderImpl.InspectionPass.cs" />
     <Compile Include="ILReader\ILReaderImpl.DecodingPass.cs" />
+    <Compile Include="ILReader\InstructionJump.cs" />
     <Compile Include="ILReader\MetadataILBody.cs" />
     <Compile Include="Model\MetadataModelTypeProvider.cs" />
     <Compile Include="Model\MetadataAssemblyReference.cs" />
@@ -116,7 +118,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ControlFlow\" />
-    <Folder Include="Interpreter\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Decoding\Strings2.resx">

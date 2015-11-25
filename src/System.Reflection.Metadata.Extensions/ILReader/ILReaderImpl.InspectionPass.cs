@@ -4,7 +4,7 @@ namespace System.Reflection.Metadata.ILReader
 {
   public partial class ILReaderImpl
   {
-    internal static FirstPassInfo InspectionPass(BlobReader reader)
+    internal static FirstPassInfo InspectionPass(BlobReader reader, IILBodyReaderAllocator allocator)
     {
       var count = 0;
       List<InstructionJump> jumps = null;
@@ -177,7 +177,7 @@ namespace System.Reflection.Metadata.ILReader
           {
             var targetOffset = reader.ReadInt32() + reader.Offset;
 
-            jumps = jumps ?? new List<InstructionJump>(capacity: 4);
+            jumps = jumps ?? allocator.AllocateJumpsList();
             jumps.Add(new InstructionJump(targetOffset, count));
             continue;
           }
@@ -240,7 +240,7 @@ namespace System.Reflection.Metadata.ILReader
           {
             var targetOffset = reader.ReadSByte() + reader.Offset;
 
-            jumps = jumps ?? new List<InstructionJump>(capacity: 4);
+            jumps = jumps ?? allocator.AllocateJumpsList();
             jumps.Add(new InstructionJump(targetOffset, count));
             continue;
           }
@@ -248,7 +248,7 @@ namespace System.Reflection.Metadata.ILReader
           case 0x45: // switch
           {
             var casesCount = reader.ReadInt32();
-            jumps = jumps ?? new List<InstructionJump>(capacity: Math.Max(casesCount, 4));
+            jumps = jumps ?? allocator.AllocateJumpsList();
 
             for (; casesCount > 0; casesCount--)
             {

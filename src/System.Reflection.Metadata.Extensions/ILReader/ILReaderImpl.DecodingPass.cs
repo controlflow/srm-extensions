@@ -2,10 +2,10 @@ namespace System.Reflection.Metadata.ILReader
 {
   public partial class ILReaderImpl
   {
-    internal static unsafe Instruction[] DecodingPass(BlobReader reader, FirstPassInfo info)
+    internal static unsafe Instruction[] DecodingPass(BlobReader reader, FirstPassInfo info, IILBodyReaderAllocator allocator)
     {
       var count = info.InstructionsCount;
-      var array = new Instruction[count];
+      var array = allocator.AllocateInstructionsArray(count);
 
       var jumps = info.GetJumpsOrUnreachable();
       var nextJumpIndex = 1;
@@ -17,6 +17,7 @@ namespace System.Reflection.Metadata.ILReader
         while (reader.Offset == nextJump.Target) // decode jumps
         {
           instructions[nextJump.Source].myOperand = index;
+          //jumps[nextJumpIndex - 1] = new InstructionJump(index, nextJump.Source);
 
           nextJump = (nextJumpIndex < jumps.Count) ? jumps[nextJumpIndex] : InstructionJump.Unreachable;
           nextJumpIndex += 1;

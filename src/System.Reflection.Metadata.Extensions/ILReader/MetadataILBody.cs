@@ -5,19 +5,13 @@ using JetBrains.Annotations;
 
 namespace System.Reflection.Metadata.ILReader
 {
-  public sealed class MetadataILBody : ILBody
+  public sealed class MetadataILBody
   {
-    private MetadataILBody(MethodDefinition methodDefinition, [NotNull] MethodBodyBlock methodBodyBlock, [NotNull] Instruction[] instructions) : base(instructions, methodBodyBlock.Size)
-    {
-      Definition = methodDefinition;
-      BodyBlock = methodBodyBlock;
-    }
-
-    public MethodDefinition Definition { get; }
-    [NotNull] public MethodBodyBlock BodyBlock { get; }
+    //public MethodDefinition Definition { get; }
+    //[NotNull] public MethodBodyBlock BodyBlock { get; }
 
     [CanBeNull] // todo: pass MetadataReader?
-    public static ILBody TryCreate([NotNull] PEReader reader, MethodDefinition methodDefinition)
+    public static ILBody TryCreate([NotNull] PEReader reader, MethodDefinition methodDefinition, [NotNull] IILBodyReaderAllocator allocator)
     {
       var virtualAddress = methodDefinition.RelativeVirtualAddress;
       if (virtualAddress == 0) return null; // abstract method
@@ -33,8 +27,8 @@ namespace System.Reflection.Metadata.ILReader
       // blob reader is then passed _by value_, this is important
       var blobReader = methodBodyBlock.GetILReader();
 
-      var instructions = ILReaderImpl.TryRead(blobReader);
-      if (instructions == null) return null;
+      var body = ILReaderImpl.TryRead(blobReader, allocator);
+      if (body == null) return null;
 
       // todo: pass inside
       //var metadataReader = reader.GetMetadataReader(MetadataReaderOptions.None);
@@ -47,7 +41,7 @@ namespace System.Reflection.Metadata.ILReader
         //  standaloneSignatureHandle, new MetadataModelTypeProvider(metadataReader));
       }
 
-      return new MetadataILBody(methodDefinition, methodBodyBlock, instructions);
+      return body;
     }
   }
 }

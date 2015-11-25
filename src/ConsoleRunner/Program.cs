@@ -7,16 +7,11 @@ using System.Reflection.Metadata.ILReader;
 using System.Reflection.Metadata.Model;
 using System.Reflection.PortableExecutable;
 
-class Program
+internal class Program
 {
-  static void Main()
+  private static void Main()
   {
-    //var builder = new IlReaderBuilder();
-    //var text = builder.BuildReadMethod();
-    //var text = builder.BuildCountMethod();
-
     var dllFiles = Directory.GetFiles(@"C:\Work\ReSharper\bin.resharper", "*.dll");
-    //var dllFiles = new[] {typeof (object).Assembly.Location};
 
     long ilBytes = 0, instructionsCount = 0;
     var stopwatch = Stopwatch.StartNew();
@@ -36,13 +31,15 @@ class Program
           var containingType = methodDefinition.ContainingType;
           if (containingType.HasValue)
           {
-            var fullName = containingType.Value.FullName;
-            var methodName = methodDefinition.Name;
-            GC.KeepAlive(fullName + methodName);
+            //var fullName = containingType.Value.FullName;
+            //var methodName = methodDefinition.Name;
+            //GC.KeepAlive(fullName + methodName);
           }
 
-          var ilBody = MetadataILBody.TryCreate(peReader, methodDefinition.Definition);
+          var ilBody = MetadataILBody.TryCreate(peReader, methodDefinition.Definition, ThreadLocalPooledILBodyReaderAllocator.Instance);
           if (ilBody == null) continue;
+
+          Process1(ilBody, metadataReader);
 
           ilBytes = Math.Max(ilBytes, ilBody.BodySize);
           instructionsCount += ilBody.Instructions.Length;
@@ -53,8 +50,27 @@ class Program
     Console.WriteLine(ilBytes);
     Console.WriteLine(instructionsCount);
 
-    var collections = string.Join("/", Enumerable.Range(0, GC.MaxGeneration + 1).Select(GC.CollectionCount));
+    var collections = string.Join("/",
+      Enumerable.Range(0, GC.MaxGeneration + 1).Select(GC.CollectionCount));
+
     Console.WriteLine("GC: {0}", collections);
     Console.WriteLine("Time: {0}", stopwatch.Elapsed);
+  }
+
+  private static void Process1(ILBody body, MetadataReader metadataReader)
+  {
+    var instructions = body.Instructions;
+
+    for (var index = 1; index < instructions.Length; index++)
+    {
+      if (instructions[index].Code == Opcode.Throw)
+      {
+        if (instructions[index - 1].Code == Opcode.Newobj)
+        {
+          //var methodHandle = instructions[index - 1].MethodHandle;
+
+        }
+      }
+    }
   }
 }

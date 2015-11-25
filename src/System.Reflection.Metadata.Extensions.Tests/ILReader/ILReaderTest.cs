@@ -29,8 +29,9 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
           gen.Emit(OpCodes.Add_Ovf_Un);
           gen.Emit(OpCodes.Ret);
         },
-        il =>
+        body =>
         {
+          var il = body.Instructions;
           Assert.That(il.Count, Is.EqualTo(8));
           Assert.AreEqual(il[0].Code, Opcode.LdcI4);
           Assert.AreEqual(il[0].Int32Value, -1);
@@ -62,8 +63,9 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
           gen.Emit(OpCodes.Neg);
           gen.Emit(OpCodes.Ret);
         },
-        il =>
+        body =>
         {
+          var il = body.Instructions;
           Assert.That(il.Count, Is.EqualTo(9));
           Assert.AreEqual(il[0].Code, Opcode.LdcI4);
           Assert.AreEqual(il[0].Int32Value, 3);
@@ -90,8 +92,9 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
           gen.Emit(OpCodes.Pop);
           gen.Emit(OpCodes.Ret);
         },
-        il =>
+        body =>
         {
+          var il = body.Instructions;
           Assert.That(il.Count, Is.EqualTo(3));
           Assert.AreEqual(il[0].Code, Opcode.Arglist);
           Assert.AreEqual(il[1].Code, Opcode.Pop);
@@ -137,8 +140,9 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
           gen.Emit(OpCodes.Unbox_Any, typeof(int));
           gen.Emit(OpCodes.Ret);
         },
-        il =>
+        body =>
         {
+          var il = body.Instructions;
           Assert.That(il.Count, Is.EqualTo(8));
           Assert.AreEqual(il[0].Code, Opcode.Ldarg);
           Assert.AreEqual(il[0].ArgumentIndex, 0);
@@ -173,8 +177,9 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
           gen.MarkLabel(label);
           gen.Emit(OpCodes.Ret);
         },
-        il =>
+        body =>
         {
+          var il = body.Instructions;
           Assert.That(il.Count, Is.EqualTo(4));
           Assert.AreEqual(il[0].Code, Opcode.Br);
           Assert.AreEqual(il[0].BranchTarget, 3);
@@ -202,8 +207,9 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
           gen.Emit(OpCodes.Brtrue_S, label);
           gen.Emit(OpCodes.Ret);
         },
-        il =>
+        body =>
         {
+          var il = body.Instructions;
           Assert.That(il.Count, Is.EqualTo(9));
           Assert.AreEqual(il[0].Code, Opcode.LdcI4);
           Assert.AreEqual(il[1].Code, Opcode.Brfalse);
@@ -239,8 +245,9 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
           gen.Emit(OpCodes.Callvirt, toStringMethod);
           gen.Emit(OpCodes.Ret);
         },
-        il =>
+        body =>
         {
+          var il = body.Instructions;
           Assert.That(il.Count, Is.EqualTo(7));
           Assert.AreEqual(il[0].Code, Opcode.Call);
           Assert.AreEqual(il[1].Code, Opcode.Ldftn);
@@ -272,8 +279,9 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
           gen.Emit(OpCodes.Castclass, typeof(string));
           gen.Emit(OpCodes.Ret);
         },
-        il =>
+        body =>
         {
+          var il = body.Instructions;
           Assert.That(il.Count, Is.EqualTo(3));
           Assert.AreEqual(il[0].Code, Opcode.Ldarg);
           Assert.AreEqual(il[0].ArgumentIndex, 0);
@@ -303,8 +311,9 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
           gen.Emit(OpCodes.Clt_Un);
           gen.Emit(OpCodes.Ret);
         },
-        il =>
+        body =>
         {
+          var il = body.Instructions;
           Assert.That(il.Count, Is.EqualTo(12));
           Assert.AreEqual(il[2].Code, Opcode.Ceq);
           Assert.AreEqual(il[4].Code, Opcode.Cgt);
@@ -324,8 +333,9 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
           gen.Emit(OpCodes.Ckfinite);
           gen.Emit(OpCodes.Ret);
         },
-        il =>
+        body =>
         {
+          var il = body.Instructions;
           Assert.That(il.Count, Is.EqualTo(3));
           Assert.AreEqual(il[0].Code, Opcode.Ldarg);
           Assert.AreEqual(il[0].ArgumentIndex, 0);
@@ -347,8 +357,9 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
           gen.Emit(OpCodes.Callvirt, toStringMethod);
           gen.Emit(OpCodes.Ret);
         },
-        il =>
+        body =>
         {
+          var il = body.Instructions;
           Assert.That(il.Count, Is.EqualTo(4));
           Assert.AreEqual(il[0].Code, Opcode.Ldarg);
           Assert.AreEqual(il[0].ArgumentIndex, 0);
@@ -385,8 +396,9 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
           gen.Emit(OpCodes.Conv_R_Un);
           gen.Emit(OpCodes.Ret);
         },
-        il =>
+        body =>
         {
+          var il = body.Instructions;
           Assert.That(il.Count, Is.EqualTo(15));
           Assert.AreEqual(il[0].Code, Opcode.Ldarg);
           Assert.AreEqual(il[0].ArgumentIndex, 0);
@@ -448,8 +460,9 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
           gen.Emit(OpCodes.Conv_Ovf_U8_Un);
           gen.Emit(OpCodes.Ret);
         },
-        il =>
+        body =>
         {
+          var il = body.Instructions;
           Assert.That(il.Count, Is.EqualTo(22));
           Assert.AreEqual(il[0].Code, Opcode.Ldarg);
           Assert.AreEqual(il[0].ArgumentIndex, 0);
@@ -513,8 +526,9 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
           gen.Emit(OpCodes.Cpobj, typeof(int));
           gen.Emit(OpCodes.Ret);
         },
-        il =>
+        body =>
         {
+          var il = body.Instructions;
           Assert.That(il.Count, Is.EqualTo(10));
           Assert.AreEqual(il[0].Code, Opcode.LdcI4);
           Assert.AreEqual(il[0].Int32Value, 8);
@@ -546,8 +560,9 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
           gen.Emit(OpCodes.Div_Un);
           gen.Emit(OpCodes.Ret);
         },
-        il =>
+        body =>
         {
+          var il = body.Instructions;
           Assert.That(il.Count, Is.EqualTo(6));
           Assert.AreEqual(il[0].Code, Opcode.Ldarg);
           Assert.AreEqual(il[0].ArgumentIndex, 0);
@@ -576,8 +591,9 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
           gen.EndExceptionBlock();
           gen.Emit(OpCodes.Ret);
         },
-        il =>
+        body =>
         {
+          var il = body.Instructions;
           Assert.That(il.Count, Is.EqualTo(5));
           Assert.AreEqual(il[0].Code, Opcode.Call);
           Assert.AreEqual(il[1].Code, Opcode.Leave);
@@ -603,8 +619,9 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
           gen.EndExceptionBlock();
           gen.Emit(OpCodes.Ret);
         },
-        il =>
+        body =>
         {
+          var il = body.Instructions;
           Assert.That(il.Count, Is.EqualTo(5));
           Assert.AreEqual(il[0].Code, Opcode.Call);
           Assert.AreEqual(il[1].Code, Opcode.Leave);
@@ -636,8 +653,9 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
           gen.EndExceptionBlock();
           gen.Emit(OpCodes.Ret);
         },
-        il =>
+        body =>
         {
+          var il = body.Instructions;
           Assert.That(il.Count, Is.EqualTo(11));
           Assert.AreEqual(il[0].Code, Opcode.Call);
           Assert.AreEqual(il[1].Code, Opcode.Leave);
@@ -673,13 +691,17 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
           gen.MarkLabel(label3);
           gen.Emit(OpCodes.Ret);
         },
-        il =>
+        body =>
         {
+          var il = body.Instructions;
           Assert.That(il.Count, Is.EqualTo(4));
           Assert.AreEqual(il[0].Code, Opcode.Switch);
           Assert.AreEqual(il[1].Code, Opcode.Nop);
           Assert.AreEqual(il[2].Code, Opcode.Nop);
           Assert.AreEqual(il[3].Code, Opcode.Ret);
+
+
+          //il[0].GetSwitchTargets()
 
           // todo: restore
           //var targets = il[0].SwitchTargets;
@@ -702,8 +724,9 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
           gen.Emit(opCode, someLabel);
           gen.Emit(OpCodes.Ret);
         },
-        il =>
+        body =>
         {
+          var il = body.Instructions;
           Assert.That(il.Count, Is.EqualTo(4));
           Assert.AreEqual(il[0].Code, Opcode.LdcI4);
           Assert.AreEqual(il[0].Int32Value, 7);
@@ -723,12 +746,12 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
       myDynamicModule = assemblyBuilder.DefineDynamicModule("Foo");
     }
 
-    private void AssertReader([NotNull] Action<ILGenerator> ilGenerator, [NotNull] Action<IList<Instruction>> assertion)
+    private void AssertReader([NotNull] Action<ILGenerator> ilGenerator, [NotNull] Action<ILBody> assertion)
     {
       AssertReader<Action>(ilGenerator, assertion);
     }
 
-    private void AssertReader<TDelegate>([NotNull] Action<ILGenerator> ilGenerator, [NotNull] Action<IList<Instruction>> assertion)
+    private void AssertReader<TDelegate>([NotNull] Action<ILGenerator> ilGenerator, [NotNull] Action<ILBody> assertion)
       where TDelegate : class
     {
       var delegateType = typeof(TDelegate);
@@ -751,10 +774,19 @@ namespace System.Reflection.Metadata.Extensions.Tests.ILReader
       var methodBody = methodInfo.GetMethodBody();
       Assert.IsNotNull(methodBody);
 
-      var body = ReflectionMethodILBody.TryCreate(methodBody);
-      Assert.IsNotNull(body);
+      {
+        var body = ReflectionILBodyFactory.TryCreate(methodBody, TrivialILBodyReaderAllocator.Instance);
+        Assert.IsNotNull(body);
 
-      assertion(body.Instructions);
+        assertion(body);
+      }
+
+      //{
+      //  var body = ReflectionILBodyFactory.TryCreate(methodBody, ThreadLocalPooledILBodyReaderAllocator.Instance);
+      //  Assert.IsNotNull(body);
+      //
+      //  assertion(body);
+      //}
     }
   }
 }
